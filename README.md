@@ -1,16 +1,18 @@
-# Project Name
-Project description
+# OpCon CLI
+A command line utility for Windows & Linux that uses the OpCon REST API to interact with OpCon. Provides functions to manage machines, machine groups, jobs, properties, thresholds and schedules.
+
+[ SOURCE CODE COMMING SOON ]
+
+# Prerequisites
+[ COMMING SOON ]
+
+# Instructions
+[ COMMING SOON ]
 
 # Disclaimer
 No Support and No Warranty are provided by SMA Technologies for this project and related material. The use of this project's files is on your own risk.
 
 SMA Technologies assumes no liability for damage caused by the usage of any of the files offered here via this Github repository.
-
-# Prerequisites
-
-
-# Instructions
-
 
 # License
 Copyright 2019 SMA Technologies
