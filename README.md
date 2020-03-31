@@ -4,10 +4,62 @@ A command line utility for Windows & Linux that uses the OpCon REST API to inter
 [ SOURCE CODE COMMING SOON ]
 
 # Prerequisites
-[ COMMING SOON ]
+
+- Uses the opCon API to perform the functions, so an opCon-API license is required
+- Requires **Java version 8**.
+  - embedded OpenJDK included in installation zip file.
 
 # Instructions
-[ COMMING SOON ]
+Is a command utility that submits requests to OpCon using the SMA OpCon-RestAPI. 
+The utility is available for both Windows and Linux.
+
+It consists of a single program **OpConCLI.exe** for Windows and **OpConCLI.sh** for Linux
+
+### Supported Functions
+ 
+Provides the following functions:
+
+- **-AppToken**      : Used to create an application token
+- **-Dependency**    : Used to check a job dependency on a remote OpCon System. It tracks the execution 
+                       of the remote job waiting for job completion. Retrieves the job log of the remote 
+                       job and terminates with the same termination code as the remote job (requires 
+                       OpCon 17 or greater).
+- **-GetJobLog**     : Retrieve the job log of a job in a schedule in the Daily tables (requires OpCon 17 or
+                       greater).
+- **-JobAction**     : JobAction	Performs an action on a job in the Daily tables (available actions are hold, 
+                       cancel, skip, kill, start, restart, forceRestart, restartOnHold, release, markFinishedOk, 
+                       markFailed, markUnderReview, markFixed).
+- **-JobAdd**        : Add a job to schedule in the Daily tables. Includes an option to wait for the 
+                       completion of the job that has been added.
+- **-MachAction**    : Performs an action on a machine or list of machines (available actions are up, 
+                       down, limited, wlimited). The option wlimited option, sets the machine into limited state
+                       and waits until all current executing jobs on the machine to complete before returning.
+- **-MachAdd**       : Add a machine or list of machines to the OpCon System.
+- **-MachGrpAdd**    : Add the machines to the machine group.
+- **-MachGrpRemove** : Removes the machines from the machine group.
+- **-MachUpdate**    : Update machine name, IP address or DNS address.
+- **-PropExp**       : Uses the expression evaluator to update properties. If the property does not 
+                       exist it is created. Supports global and instance properties.
+- **-PropUpdate**    : Updates the value of a global property for OpCon 18.1 and beyond (supports 
+                       encryption).
+- **-SchedAction**   : Performs an action on a schedule (available actions are hold, release, start,
+                       close).
+- **-SchedBuild**    : Build a schedule (requires OpCon 18.1 or greater).
+- **-SchedRebuild**  : Rebuilds schedules in the daily (requires OpCon 18.1 or greater).
+- **-ThreshUpdate**  : Updates the value of a threshold.
+- **-Version**       : Retrieves the version of a the SMA OpCon-RestAPI
+
+See documentation for arguments required for the individual functions.
+
+### Installation
+**Windows** 
+Download OpConCLI_win.zip file from the desired release by selecting and saving the file.
+After download create a installation root folder and then extract the information from the downloaded
+file into the created installation directory. 
+**Linux** 
+Download OpConCLI_Linux.tar file from the desired release by selecting and saving the file.
+After download create a installation root folder and then extract the information from the downloaded
+file into the created installation directory.
 
 # Disclaimer
 No Support and No Warranty are provided by SMA Technologies for this project and related material. The use of this project's files is on your own risk.
