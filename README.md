@@ -5,9 +5,9 @@ A command line utility for Windows & Linux that uses the OpCon REST API to inter
 
 # Prerequisites
 
-- Uses the opCon API to perform the functions, so an opCon-API license is required
+- Uses the opCon API to perform the functions, so an OpCon-API license is required
 - Requires **Java version 8**.
-  - embedded OpenJDK included in installation zip file.
+  - embedded OpenJDK included in installation zip / tar files.
 
 # Instructions
 Is a command utility that submits requests to OpCon using the SMA OpCon-RestAPI. 
@@ -60,6 +60,8 @@ file into the created installation directory.
 Download OpConCLI_Linux.tar file from the desired release by selecting and saving the file.
 After download create a installation root folder and then extract the information from the downloaded
 file into the created installation directory.
+
+See documentation for configuration requirements after installation.
 
 # Disclaimer
 No Support and No Warranty are provided by SMA Technologies for this project and related material. The use of this project's files is on your own risk.
