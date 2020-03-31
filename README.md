@@ -54,13 +54,13 @@ See documentation for arguments required for the individual functions.
 
 ## Installation
 
-###Windows
+### Windows
  
 Download OpConCLI_win.zip file from the desired release by selecting and saving the file.
 After download create a installation root folder and then extract the information from the downloaded
 file into the created installation directory. 
 
-###Linux
+### Linux
  
 Download OpConCLI_Linux.tar file from the desired release by selecting and saving the file.
 After download create a installation root folder and then extract the information from the downloaded
