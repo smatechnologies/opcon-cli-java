@@ -1,21 +1,22 @@
 # OpCon CLI
-A command line utility for Windows & Linux that uses the OpCon REST API to interact with OpCon. Provides functions to manage machines, machine groups, jobs, properties, thresholds and schedules.
+A command line utility for Windows & Linux that uses the OpCon Rest-API to interact with OpCon. Provides functions to manage machines, 
+machine groups, jobs, properties, thresholds and schedules.
 
 [ SOURCE CODE COMMING SOON ]
 
 # Prerequisites
 
-- Uses the opCon API to perform the functions, so an OpCon-API license is required
+- Uses the OpCon Rest-API to perform the functions, so an OpCon Rest-API license is required
 - Requires **Java version 8**.
   - embedded OpenJDK included in installation zip / tar files.
 
 # Instructions
-Is a command utility that submits requests to OpCon using the SMA OpCon-RestAPI. 
+Is a command utility that submits requests to OpCon using the SMA OpCon Rest-API. 
 The utility is available for both Windows and Linux.
 
 It consists of a single program **OpConCLI.exe** for Windows and **OpConCLI.sh** for Linux
 
-### Supported Functions
+## Supported Functions
  
 Provides the following functions:
 
@@ -23,8 +24,8 @@ Provides the following functions:
 - **-Dependency**    : Used to check a job dependency on a remote OpCon System. It tracks the execution 
                        of the remote job waiting for job completion. Retrieves the job log of the remote 
                        job and terminates with the same termination code as the remote job (requires 
-                       OpCon 17 or greater).
-- **-GetJobLog**     : Retrieve the job log of a job in a schedule in the Daily tables (requires OpCon 17 or
+                       OpCon 17.1 or greater).
+- **-GetJobLog**     : Retrieve the job log of a job in a schedule in the Daily tables (requires OpCon 17.1 or
                        greater).
 - **-JobAction**     : JobAction	Performs an action on a job in the Daily tables (available actions are hold, 
                        cancel, skip, kill, start, restart, forceRestart, restartOnHold, release, markFinishedOk, 
@@ -51,12 +52,16 @@ Provides the following functions:
 
 See documentation for arguments required for the individual functions.
 
-### Installation
-**Windows** 
+## Installation
+
+###Windows
+ 
 Download OpConCLI_win.zip file from the desired release by selecting and saving the file.
 After download create a installation root folder and then extract the information from the downloaded
 file into the created installation directory. 
-**Linux** 
+
+###Linux
+ 
 Download OpConCLI_Linux.tar file from the desired release by selecting and saving the file.
 After download create a installation root folder and then extract the information from the downloaded
 file into the created installation directory.
