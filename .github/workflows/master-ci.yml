@@ -23,3 +23,18 @@ jobs:
           
       - name: Build
         run: mvn clean package
+        
+      - uses: actions/upload-artifact@v1
+        with:
+          name: opconcli.exe
+          path: opcon-cli-dist/opconcli.exe
+          
+      - uses: actions/upload-artifact@v1
+        with:
+          name: EncryptValue.exe
+          path: opcon-cli-dist/EncryptValue.exe
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: opcon.command.api.jar
+          path: opcon-cli-dist/opcon.command.api.jar
