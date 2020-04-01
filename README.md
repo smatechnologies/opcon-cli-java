@@ -2,8 +2,6 @@
 A command line utility for Windows & Linux that uses the OpCon Rest-API to interact with OpCon. Provides functions to manage machines, 
 machine groups, jobs, properties, thresholds and schedules.
 
-[ SOURCE CODE COMMING SOON ]
-
 # Prerequisites
 
 - Uses the OpCon Rest-API to perform the functions, so an OpCon Rest-API license is required
@@ -16,9 +14,9 @@ The utility is available for both Windows and Linux.
 
 It consists of a single program **OpConCLI.exe** for Windows and **OpConCLI.sh** for Linux
 
-## Supported Functions
+## Supported Tasks
  
-Provides the following functions:
+Provides the following tasks:
 
 - **-AppToken**      : Used to create an application token
 - **-Dependency**    : Used to check a job dependency on a remote OpCon System. It tracks the execution 
