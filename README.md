@@ -1,5 +1,3 @@
-![master-ci](https://github.com/oeil/opcon-cli-java/workflows/master-ci/badge.svg)
-
 # OpCon CLI
 A command line utility for Windows & Linux that uses the OpCon Rest-API to interact with OpCon. Provides functions to manage machines, 
 machine groups, jobs, properties, thresholds and schedules.

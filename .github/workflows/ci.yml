@@ -1,3 +1,4 @@
+# Workflow triggering
 on:
   push:
     branches:
@@ -5,35 +6,37 @@ on:
     tags:
       - 'v*'
 
-name: master-ci
+name: CI
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        java: [ 11 ]
-    name: Java ${{ matrix.java }} compile
+    name: CI on Java 11
     
     steps:
+      # Checkout the code
       - name: Code checkout
         uses: actions/checkout@master
       
+      # Prepare the environment with Java 11
       - name: Setup java
         uses: actions/setup-java@v1
         with:
-          java-version: ${{ matrix.java }}
+          java-version: 11
           
+      # Build the maven project, output into ./opcon-cli-dist/
       - name: Build
         run: mvn clean package
       
+      # Download the latest GA OpenJDK JRE 11 from AdoptOpenJDK for Windows x64
       - name: Get Java 11 JRE for Windows x64
         run: curl -L "https://api.adoptopenjdk.net/v3/binary/latest/11/ga/windows/x64/jre/hotspot/normal/adoptopenjdk" --output java.zip
         
+      # Extract Windows JRE
       - name: Extract JRE into Java
         run: 7z x java.zip -o./opcon-cli-dist/
-        
+      
+      # Prepare the Windows distribution folder for Zip
       - name: Create Windows Folder
         run: |
           mkdir OpConCLI_Windows
@@ -43,27 +46,32 @@ jobs:
           cp opcon-cli-dist/Connector.config OpConCLI_Windows/
           cp documentation/OpConCLI.docx OpConCLI_Windows/
           
+      # Zip the folder that contains all binaries and configuration to run on Windows (including Java)    
       - name: Zip Windows Folder
         uses: montudor/action-zip@v0.1.0
         with:
           args: zip -qq -r ./OpConCLI_Windows.zip ./OpConCLI_Windows
-        
+      
+      # Upload the opconcli.exe binary file as artifact
       - uses: actions/upload-artifact@v1
         with:
           name: opconcli.exe
           path: opcon-cli-dist/opconcli.exe
-          
+      
+      # Upload the ecryptvalue.exe binary file as artifact
       - uses: actions/upload-artifact@v1
         with:
           name: EncryptValue.exe
           path: opcon-cli-dist/EncryptValue.exe
 
+      # Upload the OpConCLI.zip file as artifact
       - uses: actions/upload-artifact@v1
         with:
           name: OpConCLI_Windows.zip
           path: ./OpConCLI_Windows.zip
           
-      #Release
+     # Release - only ran when pushing new Tag starting with 'v'
+     # Create a new release out of the Tag being pushed
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/v')
         id: create_release
@@ -75,7 +83,9 @@ jobs:
           release_name: Release ${{ github.ref }}
           draft: true
           prerelease: false
-          
+      
+      # Release - only ran when pushing new Tag starting with 'v'
+      # Upload the Windows Zip distribution to the newly created Release
       - name: Upload Release Asset
         if: startsWith(github.ref, 'refs/tags/v')
         id: upload_release_asset
