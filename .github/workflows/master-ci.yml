@@ -28,7 +28,7 @@ jobs:
         run: curl -L "https://api.adoptopenjdk.net/v3/binary/latest/11/ga/windows/x64/jre/hotspot/normal/adoptopenjdk" --output java11.zip
         
       - name: Extract JRE into Java
-        run: 7z e java11.zip
+        run: 7z x java11.zip -o./opcon-cli-dist/
       
       - name: Show Extract
         run: ls -lla
