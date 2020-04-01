@@ -30,13 +30,14 @@ jobs:
       - name: Extract JRE into Java
         run: 7z x java.zip -o./opcon-cli-dist/
         
-      - name: Rename JRE folder into Java
+      - name: Create Windows Folder
         run: |
           mkdir OpConCLI_Windows
           mv opcon-cli-dist/jdk-* OpConCLI_Windows/java
           cp opcon-cli-dist/opconcli.exe OpConCLI_Windows/
           cp opcon-cli-dist/EncryptValue.exe OpConCLI_Windows/
           cp opcon-cli-dist/Connector.config OpConCLI_Windows/
+          cp documentation/OpConCLI.docx OpConCLI_Windows/
           
       - name: Zip Windows Folder
         uses: montudor/action-zip@v0.1.0
