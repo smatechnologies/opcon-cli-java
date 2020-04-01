@@ -5,7 +5,7 @@ machine groups, jobs, properties, thresholds and schedules.
 # Prerequisites
 
 - Uses the OpCon Rest-API to perform the functions, so an OpCon Rest-API license is required
-- Requires **Java version 8**.
+- Requires **Java version 11**.
   - embedded OpenJDK included in installation zip / tar files.
 
 # Instructions
