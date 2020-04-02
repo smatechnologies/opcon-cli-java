@@ -17,6 +17,7 @@
     <jcommander.version>1.72</jcommander.version>
     <java.version>11</java.version>
     <opcon.rest.api.version>1.0.3-SNAPSHOT</opcon.rest.api.version>
+	<release.dir>${project.basedir}/opcon-cli-dist</release.dir>
   </properties>
 
   <repositories>
@@ -99,6 +100,7 @@
         <version>1.7.30</version> <!-- or use LATEST -->
     </dependency>
   </dependencies>
+
   <build>
 	<finalName>${project.artifactId}</finalName>
 	<plugins>
@@ -117,7 +119,7 @@
 			<configuration>
 				<filesets>
 					<fileset>
-						<directory>${project.basedir}/Release</directory>
+						<directory>${release.dir}</directory>
 						<includes>
 							<include>*.*</include>
 						</includes>
@@ -174,8 +176,8 @@
            			</goals>
            			<configuration>
              				<headerType>console</headerType>
-             				<outfile>${project.basedir}/Release/OpConCli.exe</outfile>
-             				<jar>${project.build.directory}/${project.artifactId}.jar</jar> 
+             				<outfile>${release.dir}/opconcli.exe</outfile>
+             				<jar>${project.build.directory}/${project.artifactId}.jar</jar>
 		        		<classPath>
 		          			<mainClass>com.smatechnologies.opcon.command.api.OpConCli</mainClass>
 		        		</classPath>
@@ -185,14 +187,14 @@
            			</configuration>
    	    		</execution>
    	    		<execution>
-           			<id>l4j-encyptvalue</id>
+           			<id>l4j-encryptvalue</id>
            			<phase>package</phase>
            			<goals>
              				<goal>launch4j</goal>
            			</goals>
            			<configuration>
              				<headerType>console</headerType>
-             				<outfile>${project.basedir}/Release/EncryptValue.exe</outfile>
+             				<outfile>${release.dir}/EncryptValue.exe</outfile>
              				<jar>${project.build.directory}/${project.artifactId}.jar</jar> 
 		        		<classPath>
 		          			<mainClass>com.smatechnologies.opcon.command.api.EncryptValue</mainClass>
@@ -213,7 +215,7 @@
 					<phase>prepare-package</phase>
 					<configuration>
 		  				<target>
-              				<copy file="${project.basedir}/src/main/resources/Connector.config" todir="${project.basedir}/Release"/>
+              				<copy file="${project.basedir}/src/main/resources/Connector.config" todir="${release.dir}"/>
 						</target>
 					</configuration>
 					<goals>
@@ -225,7 +227,7 @@
 					<phase>package</phase>
 					<configuration>
 						<target>
-							<copy file="${project.basedir}/target/${project.artifactId}.jar" todir="${project.basedir}/Release"/>
+							<copy file="${project.basedir}/target/${project.artifactId}.jar" todir="${release.dir}"/>
 						</target>
 					</configuration>
 					<goals>

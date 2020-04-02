@@ -1,0 +1,7 @@
+.DS_Store
+Release/
+opcon-cli-dist/
+.classpath
+.project
+.settings/
+target/
