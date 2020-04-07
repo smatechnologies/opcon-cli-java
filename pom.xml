@@ -16,7 +16,7 @@
     <jaxb.api.version>2.3.0</jaxb.api.version>
     <jcommander.version>1.72</jcommander.version>
     <java.version>11</java.version>
-    <opcon.rest.api.version>1.0.3-SNAPSHOT</opcon.rest.api.version>
+    <opcon.rest.api.version>1.0.3</opcon.rest.api.version>
 	<release.dir>${project.basedir}/opcon-cli-dist</release.dir>
   </properties>
 
