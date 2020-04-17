@@ -174,7 +174,7 @@ Arguments | Description
 --------- | -----------
 **-t** | Value is **MachAction**
 **-mn** | the machine(s) to perform the action on (value **mach1** for single machine or **mach1,mach2,mach3** for multiple machines).
-**-ma** | the action to be performed on the machine(s). Value is **up**, **down**, **limited**, **wlimited** (Note : wlimited is a special version of limited that sets machine to limited mode and returns when all the current running jobs have completed.
+**-ma** | the action to be performed on the machine(s). Value is **up**, **down**, **limited**, **wlimited**. (Note : wlimited is a special version of limited that sets machine to limited mode and returns when all the current running jobs have completed).
 
 Example 1 : Set the machines MACH1,MACH2 to a down state.
 ```
