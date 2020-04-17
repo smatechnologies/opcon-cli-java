@@ -174,7 +174,7 @@ Arguments | Description
 --------- | -----------
 **-t** | Value is **MachAction**
 **-mn** | the machine(s) to perform the action on (value **mach1** for single machine or **mach1,mach2,mach3** for multiple machines).
-**-ma** | the action to be performed on the machine(s). Value is **up**, **down**, **limited**.s
+**-ma** | the action to be performed on the machine(s). Value is **up**, **down**, **limited**, **wlimited** (Note : wlimited is a special version of limited that sets machine to limited mode and returns when all the current running jobs have completed.
 
 Example 1 : Set the machines MACH1,MACH2 to a down state.
 ```
@@ -182,19 +182,20 @@ opconcli.exe -t MachAction -mn BVHTEST02AMT_AGENT,AMT_AGENT -ma down -o OPCONA
 ```
 
 ### MachAdd
-Create a new Machine from a json template file.
+Create a new Machine(s) from a json template file. (Note : The json file structure is an array of machine definitions even if a single definition is submitted).  
 
 Arguments | Description
 --------- | -----------
 **-t** | Value is **MachAdd**
 **-md** | Fully Qualified DNS of the machine to be added. If present will override the value in the JSON file. (Note : only works if there is a single machine definition in the JSON file).
-**-mf** | File name of JSON structure containing the definitions of the machine to add (see below the json file structure).
+**-mf** | File name of JSON structure containing the definitions of the machine(s) to add (see below the json file structure).
 **-mi** | IP Address of the machine to be added. If present will override the value in the JSON file. (Note : only works if there is a single machine definition in the JSON file).
 **-mn** | Name of the machine to be added. If present will override the value in the JSON file. (Note : only works if there is a single machine definition in the JSON file).
 
 **Machine json structure**:
 ```json
-{
+[
+ {
   "requiresXMLEscape": false,
   "agentSMACommunicationsProtocol": "NEW2",
   "allowKillJob": false,
@@ -272,7 +273,8 @@ Arguments | Description
     "networkStatus": "D",
     "operationStatus": "D"
   }
-}
+ }
+]
 
 ```
 
