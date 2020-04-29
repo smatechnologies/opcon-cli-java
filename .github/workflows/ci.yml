@@ -44,7 +44,6 @@ jobs:
           cp opcon-cli-dist/opconcli.exe OpConCLI_Windows/
           cp opcon-cli-dist/EncryptValue.exe OpConCLI_Windows/
           cp opcon-cli-dist/Connector.config OpConCLI_Windows/
-          cp documentation/OpConCLI.docx OpConCLI_Windows/
           
       # Zip the folder that contains all binaries and configuration to run on Windows (including Java)    
       - name: Zip Windows Folder
