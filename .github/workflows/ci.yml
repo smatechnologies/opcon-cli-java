@@ -111,7 +111,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-          draft: true
+          draft: false
           prerelease: false
 
       # Release - only ran when pushing new Tag starting with 'v'
