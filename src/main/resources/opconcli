@@ -1,0 +1,5 @@
+#!/bin/bash
+SCRIPT_DIR=$(dirname "$0")
+cd $SCRIPT_DIR
+JAVA="./java/bin/java"
+exec $JAVA -cp opcon.command.api.jar com.smatechnologies.opcon.command.api.OpConCli "$@"

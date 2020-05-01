@@ -5,3 +5,4 @@ opcon-cli-dist/
 .project
 .settings/
 target/
+log/

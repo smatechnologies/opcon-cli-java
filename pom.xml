@@ -216,6 +216,8 @@
 					<configuration>
 		  				<target>
               				<copy file="${project.basedir}/src/main/resources/Connector.config" todir="${release.dir}"/>
+							<copy file="${project.basedir}/src/main/resources/opconcli" todir="${release.dir}"/>
+							<copy file="${project.basedir}/src/main/resources/EncryptValue" todir="${release.dir}"/>
 						</target>
 					</configuration>
 					<goals>

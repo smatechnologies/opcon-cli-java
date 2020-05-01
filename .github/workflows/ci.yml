@@ -44,30 +44,47 @@ jobs:
           cp opcon-cli-dist/opconcli.exe OpConCLI_Windows/
           cp opcon-cli-dist/EncryptValue.exe OpConCLI_Windows/
           cp opcon-cli-dist/Connector.config OpConCLI_Windows/
-          
+
       # Zip the folder that contains all binaries and configuration to run on Windows (including Java)    
       - name: Zip Windows Folder
         uses: montudor/action-zip@v0.1.0
         with:
           args: zip -qq -r ./OpConCLI_Windows.zip ./OpConCLI_Windows
-      
-      # Upload the opconcli.exe binary file as artifact
-      - uses: actions/upload-artifact@v1
-        with:
-          name: opconcli.exe
-          path: opcon-cli-dist/opconcli.exe
-      
-      # Upload the ecryptvalue.exe binary file as artifact
-      - uses: actions/upload-artifact@v1
-        with:
-          name: EncryptValue.exe
-          path: opcon-cli-dist/EncryptValue.exe
 
-      # Upload the OpConCLI.zip file as artifact
+      # Upload the OpConCLI_Windows.zip file as artifact
       - uses: actions/upload-artifact@v1
         with:
           name: OpConCLI_Windows.zip
           path: ./OpConCLI_Windows.zip
+      
+      # Download the latest GA OpenJDK JRE 11 from AdoptOpenJDK for Linux x64
+      - name: Get Java 11 JRE for Windows x64
+        run: curl -L "https://api.adoptopenjdk.net/v3/binary/latest/11/ga/linux/x64/jre/hotspot/normal/adoptopenjdk" --output java.zip
+
+      # Extract Linux JRE
+      - name: Extract JRE into Java
+        run: 7z x java.zip -o./opcon-cli-dist/
+      
+      # Prepare the Linux distribution folder for Zip
+      - name: Create Windows Folder
+        run: |
+          mkdir OpConCLI_Linux
+          mv opcon-cli-dist/jdk-* OpConCLI_Linux/java
+          cp opcon-cli-dist/opconcli OpConCLI_Linux/
+          cp opcon-cli-dist/EncryptValue OpConCLI_Linux/
+          cp opcon-cli-dist/Connector.config OpConCLI_Linux/
+      
+      # Zip the folder that contains all binaries and configuration to run on Linux (including Java)    
+      - name: Zip Windows Folder
+        uses: montudor/action-zip@v0.1.0
+        with:
+          args: zip -qq -r ./OpConCLI_Linux.zip ./OpConCLI_Linux
+
+      # Upload the OpConCLI_Linux.zip file as artifact
+      - uses: actions/upload-artifact@v1
+        with:
+          name: OpConCLI_Linux.zip
+          path: ./OpConCLI_Linux.zip
           
      # Release - only ran when pushing new Tag starting with 'v'
      # Create a new release out of the Tag being pushed
@@ -95,4 +112,18 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: OpConCLI_Windows.zip
           asset_name: OpConCLI_Windows.zip
+          asset_content_type: application/zip
+
+      # Release - only ran when pushing new Tag starting with 'v'
+      # Upload the Linux Zip distribution to the newly created Release
+      - name: Upload Release Asset
+        if: startsWith(github.ref, 'refs/tags/v')
+        id: upload_release_asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: OpConCLI_Linux.zip
+          asset_name: OpConCLI_Linux.zip
           asset_content_type: application/zip
