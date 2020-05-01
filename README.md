@@ -46,8 +46,6 @@ Download OpConCLI_Windows.zip file from the desired [release available here](htt
 After download, extract the zip file to the location you'd like to install the command line utility. Once unzipped, everything needed should be located under the root folder of that directory.
 
 ### Linux Instructions
-[FILES WILL SOON BE AVAILABLE]
-
 Download OpConCLI_Linux.tar.gz file from the desired [release available here](https://github.com/SMATechnologies/opcon-cli-java/releases).
 
 # Disclaimer
