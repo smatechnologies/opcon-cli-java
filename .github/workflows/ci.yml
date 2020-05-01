@@ -141,4 +141,4 @@ jobs:
         with:
           files: 'OpConCLI_Windows.zip;OpConCLI_Linux.tar.gz'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          release-tag: ${{ github.ref }}
+          release-tag: ${GITHUB_REF:10}
