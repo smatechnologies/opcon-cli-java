@@ -3,7 +3,7 @@
 <configuration>
     <property name="logback.logfile.name" value="${logback.logfile.name:-cmdline}" />
     <property name="logback.logfile" value="${logback.logfile:-TRUE}" />
-    <property name="logback.pattern.light" value="[%d{HH:mm:ss}] [%-5p] [%class{0}.%M] %msg %ex%n" />
+    <property name="logback.pattern.light" value="[%d{HH:mm:ss}] [%-5p] %msg %ex%n" />
     <property name="logback.pattern.full" value="[%d{yy-MM-dd HH:mm:ss.SSS}] [%-5p] (%-27c{0} %3L\\) %msg %ex{full}%n" />
 
     <property name="logback.path" value="${logback.path:-log}" />
