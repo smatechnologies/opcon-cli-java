@@ -59,32 +59,34 @@ jobs:
       
       # Download the latest GA OpenJDK JRE 11 from AdoptOpenJDK for Linux x64
       - name: Get Java 11 JRE for Windows x64
-        run: curl -L "https://api.adoptopenjdk.net/v3/binary/latest/11/ga/linux/x64/jre/hotspot/normal/adoptopenjdk" --output java.zip
+        run: curl -L "https://api.adoptopenjdk.net/v3/binary/latest/11/ga/linux/x64/jre/hotspot/normal/adoptopenjdk" --output java.tar.gz
 
       # Extract Linux JRE
       - name: Extract JRE into Java
-        run: 7z x java.zip -o./opcon-cli-dist/
+        run: |
+          mkdir ./opcon-cli-dist/
+          tar xvzf java.tar.gz -C ./opcon-cli-dist
       
       # Prepare the Linux distribution folder for Zip
       - name: Create Windows Folder
         run: |
           mkdir OpConCLI_Linux
           mv opcon-cli-dist/jdk-* OpConCLI_Linux/java
+          chmod a+x opcon-cli-dist/opconcli
           cp opcon-cli-dist/opconcli OpConCLI_Linux/
+          chmod a+x opcon-cli-dist/EncryptValue
           cp opcon-cli-dist/EncryptValue OpConCLI_Linux/
           cp opcon-cli-dist/Connector.config OpConCLI_Linux/
       
-      # Zip the folder that contains all binaries and configuration to run on Linux (including Java)    
-      - name: Zip Windows Folder
-        uses: montudor/action-zip@v0.1.0
-        with:
-          args: zip -qq -r ./OpConCLI_Linux.zip ./OpConCLI_Linux
+      # tar.gz the folder that contains all binaries and configuration to run on Linux (including Java)    
+      - name: Zip Linux Folder
+        run: tar -cvzf ./OpConCLI_Linux.tar.gz ./OpConCLI_Linux
 
-      # Upload the OpConCLI_Linux.zip file as artifact
+      # Upload the OpConCLI_Linux.tar.gz file as artifact
       - uses: actions/upload-artifact@v1
         with:
-          name: OpConCLI_Linux.zip
-          path: ./OpConCLI_Linux.zip
+          name: OpConCLI_Linux.tar.gz
+          path: ./OpConCLI_Linux.tar.gz
           
      # Release - only ran when pushing new Tag starting with 'v'
      # Create a new release out of the Tag being pushed
@@ -124,6 +126,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: OpConCLI_Linux.zip
-          asset_name: OpConCLI_Linux.zip
-          asset_content_type: application/zip
+          asset_path: OpConCLI_Linux.tar.gz
+          asset_name: OpConCLI_Linux.tar.gz
+          asset_content_type: application/tar.gz

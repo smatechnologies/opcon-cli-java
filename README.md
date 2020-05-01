@@ -48,7 +48,7 @@ After download, extract the zip file to the location you'd like to install the c
 ### Linux Instructions
 [FILES WILL SOON BE AVAILABLE]
 
-Download OpConCLI_Linux.tar file from the desired [release available here](https://github.com/SMATechnologies/opcon-cli-java/releases).
+Download OpConCLI_Linux.tar.gz file from the desired [release available here](https://github.com/SMATechnologies/opcon-cli-java/releases).
 
 # Disclaimer
 No Support and No Warranty are provided by SMA Technologies for this project and related material. The use of this project's files is on your own risk.
