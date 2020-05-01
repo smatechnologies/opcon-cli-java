@@ -13,7 +13,7 @@ The utility is available for both Windows and Linux.
 
 See [documentation](/documentation/opcon-cli.md) for the complete documentation.
 
-It consists of a single program **opconcli.exe** for Windows and **opconcli.sh** for Linux.
+It consists of a single program **opconcli.exe** for Windows and **opconcli** for Linux.
 
 ## Supported Tasks
 The opconcli program provides the following tasks:

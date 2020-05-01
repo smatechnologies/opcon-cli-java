@@ -68,6 +68,8 @@ On Windows, example on how to encrypt the value "abcdefg":
 EncryptValue -v abcdefg
 ```
 
+## Exit Codes
+The `opconcli` exits `0` when the performed request succeeds. Otherwise `opconcli` exits `1` on failure.
 
 ## Command Line Arguments
 The opconcli program requires arguments to be given to function. It uses the principle of Tasks, where each task perform an action or a combinaison of actions against OpCon.
