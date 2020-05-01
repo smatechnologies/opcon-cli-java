@@ -113,11 +113,13 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: OpConCLI_Windows.zip
+          path: ./
 
       - name: Download Linux Package
         uses: actions/download-artifact@v1
         with:
           name: OpConCLI_Linux.tar.gz
+          path: ./
 
       # Create a new release out of the Tag being pushed
       - name: Create Release
