@@ -6,7 +6,7 @@ on:
     tags:
       - 'v*'
 
-name: CI
+name: OpCon CLI
 
 jobs:
   build:
@@ -28,7 +28,7 @@ jobs:
       - name: Build
         run: mvn clean package
 
-        
+
 ####################################
 # Create Windows Distribution File #
 ####################################        
@@ -67,17 +67,15 @@ jobs:
 ################################## 
           
       # Download the latest GA OpenJDK JRE 11 from AdoptOpenJDK for Linux x64
-      - name: Get Java 11 JRE for Windows x64
+      - name: Get Java 11 JRE for Linux x64
         run: curl -L "https://api.adoptopenjdk.net/v3/binary/latest/11/ga/linux/x64/jre/hotspot/normal/adoptopenjdk" --output java.tar.gz
 
       # Extract Linux JRE
       - name: Extract JRE into Java
-        run: |
-          mkdir ./opcon-cli-dist/
-          tar xvzf java.tar.gz -C ./opcon-cli-dist
+        run: tar xvzf java.tar.gz -C ./opcon-cli-dist
       
       # Prepare the Linux distribution folder for Zip
-      - name: Create Windows Folder
+      - name: Create Linux Folder
         run: |
           mkdir OpConCLI_Linux
           mv opcon-cli-dist/jdk-* OpConCLI_Linux/java
