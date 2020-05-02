@@ -4,7 +4,7 @@
 
   <groupId>com.smatechnologies</groupId>
   <artifactId>opcon.command.api</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>opcon.command.api</name>
@@ -216,6 +216,8 @@
 					<configuration>
 		  				<target>
               				<copy file="${project.basedir}/src/main/resources/Connector.config" todir="${release.dir}"/>
+							<copy file="${project.basedir}/src/main/resources/opconcli" todir="${release.dir}"/>
+							<copy file="${project.basedir}/src/main/resources/EncryptValue" todir="${release.dir}"/>
 						</target>
 					</configuration>
 					<goals>

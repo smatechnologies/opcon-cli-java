@@ -3,7 +3,7 @@
 OpCon CLI is a command line utility for Windows & Linux that uses the OpCon REST-API to interact with OpCon. Provides functions to manage machines, 
 machine groups, jobs, properties, thresholds and schedules...
 
-It consists of a single program **opconcli.exe** for Windows and **opconcli.sh** for Linux.
+It consists of a single program **opconcli.exe** for Windows and **opconcli** for Linux.
 
 ## Installation
 
@@ -19,18 +19,16 @@ Download OpConCLI_Windows.zip file from the desired [release available here](htt
 After download, extract the zip file to the location you'd like to install the command line utility. Once unzipped, everything needed should be located under the root folder of that directory.
 
 ### Linux Instructions
-[FILES WILL SOON BE AVAILABLE]
+Download OpConCLI_Linux.tar.gz file from the desired [release available here](https://github.com/SMATechnologies/opcon-cli-java/releases).
 
-Download OpConCLI_Linux.tar file from the desired [release available here](https://github.com/SMATechnologies/opcon-cli-java/releases).
-
-After download, extract the zip file to the location you'd like to install the command line utility. Once unzipped, everything needed should be located under the root folder of that directory.
+After download, extract the tar.gz file to the location you'd like to install the command line utility. Once extracted, everything needed should be located under the root folder of that directory.
 
 ## Configuration
 The OpConCLI utility uses a configuration file **Connector.config** that contains the OpCon System connection information.
 
 The header name of the OpCon System connection information is used by the **-o** command argument to retrieve the connection information for the required system. This allows the utility to submit requests to multiple OpCon systems from a single installation avoiding user to pass credentials every single time.
 
-The **USER** and **PASSWORD** information should be encrypted using the **EncryptValue.exe** program for Windows or **EncryptValue.sh** shell for Linux (included in the zip/tar file). The encryption tool provides basic encryption capabilities to prevent clear text.
+The **USER** and **PASSWORD** information should be encrypted using the **EncryptValue.exe** program for Windows or **EncryptValue** shell script for Linux (included in the zip files). The encryption tool provides basic encryption capabilities to prevent clear text.
 
 **Connector.config** file example:
 ```
@@ -67,8 +65,11 @@ Supports a -v argument and displays the encrypted value
 
 On Windows, example on how to encrypt the value "abcdefg":
 ```
-EncryptValue.exe -v abcdefg
+EncryptValue -v abcdefg
 ```
+
+## Exit Codes
+The `opconcli` exits `0` when the performed request succeeds. Otherwise `opconcli` exits `1` on failure.
 
 ## Command Line Arguments
 The opconcli program requires arguments to be given to function. It uses the principle of Tasks, where each task perform an action or a combinaison of actions against OpCon.
