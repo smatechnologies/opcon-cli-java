@@ -2,6 +2,8 @@
 A command line utility for Windows & Linux that uses the OpCon Rest-API to interact with OpCon. Provides functions to manage machines, 
 machine groups, jobs, properties, thresholds and schedules.
 
+![OpCon CLI Terminal](documentation/imgs/opcon-cli_terminal.png)
+
 # Prerequisites
 - Uses the OpCon Rest-API to perform the functions, so an OpCon Rest-API license is required.
 - This command line utility requires **Java version 11** to function:
