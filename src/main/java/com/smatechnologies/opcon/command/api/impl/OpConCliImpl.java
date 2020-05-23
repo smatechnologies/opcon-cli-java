@@ -7,6 +7,8 @@ import java.io.FileWriter;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +24,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smatechnologies.opcon.command.api.arguments.OpConCliArguments;
 import com.smatechnologies.opcon.command.api.config.CmdConfiguration;
+import com.smatechnologies.opcon.command.api.enums.JobActions;
 import com.smatechnologies.opcon.command.api.enums.TaskType;
 import com.smatechnologies.opcon.command.api.interfaces.IOpConCli;
 import com.smatechnologies.opcon.command.api.interfaces.IDependency;
@@ -42,6 +45,7 @@ import com.smatechnologies.opcon.restapiclient.WsException;
 import com.smatechnologies.opcon.restapiclient.api.OpconApi;
 import com.smatechnologies.opcon.restapiclient.api.OpconApiProfile;
 import com.smatechnologies.opcon.restapiclient.jackson.DefaultObjectMapperProvider;
+import com.smatechnologies.opcon.restapiclient.model.dailyjob.DailyJob;
 import com.smatechnologies.opcon.restapiclient.model.machine.Machine;
 
 public class OpConCliImpl implements IOpConCli {
@@ -62,6 +66,9 @@ public class OpConCliImpl implements IOpConCli {
 	private static final String JobActionMissingScheduleNameMsg =         "Required -sn (schedule name) argument missing for JobAction task";
 	private static final String JobActionMissingJobNameMsg =              "Required -jn (job name) argument missing for JobAction task";
 	private static final String JobActionMissingJobActionMsg =            "Required -ja (job action) argument missing for JobAction task";
+	private static final String JobActionEstimatedJobStartTimeMsg =       "Estimated Start time for Job {0} of Schedule {1} is {2} ";
+	private static final String JobActionEstimatedJobStartTimeJobNotFoundErrorMsg =  "Job {0} of Schedule {1} on Date {2} not found";
+	private static final String JobActionEstimatedJobStartTimeInvalidTimeErrorMsg =  "Estimated Start Time for Job {0} of Schedule {1} on Date {2} invalid";
 	
 	private static final String JobLogProcessingTaskMsg =                 "Processing task ({0}) arguments : date ({1}) schedule ({2}) job ({3}) file ({4})";
 	private static final String JobLogMissingScheduleNameMsg =            "Required -sn (schedule name) argument missing for JobLog task";
@@ -107,6 +114,8 @@ public class OpConCliImpl implements IOpConCli {
 	
 	private static final String UrlFormatTls = "https://{0}:{1}/api";
 	private static final String UrlFormatNonTls = "http://{0}:{1}/api";
+	
+	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy : HH:mm");
 	
 	private final static Logger LOG = LoggerFactory.getLogger(OpConCliImpl.class);
 	private static CmdConfiguration _CmdConfiguration = CmdConfiguration.getInstance();
@@ -232,7 +241,32 @@ public class OpConCliImpl implements IOpConCli {
 					}
 					LOG.info(MessageFormat.format(JobActionProcessingTaskMsg,_OpConCliArguments.getTask(),_OpConCliArguments.getTaskDate(),_OpConCliArguments.getScheduleName(),
 							_OpConCliArguments.getJobName(),_OpConCliArguments.getJobAction()));
-					completionCode = _IJob.jobActionRequest(opconApi, _OpConCliArguments);
+					if(_OpConCliArguments.getJobAction().equalsIgnoreCase(JobActions.estimatedStartTime.name())) {
+						// get the daily job
+						DailyJob dailyJob = _IJob.getDailyJobByName(opconApi, _OpConCliArguments);
+						if(dailyJob != null) {
+							// retrieve the estimated start time
+							dailyJob.getComputedStartTime();
+							if(dailyJob.getComputedStartTime() != null) {
+								ZonedDateTime zdtime = dailyJob.getComputedStartTime().getTime();
+								LOG.info(MessageFormat.format(JobActionEstimatedJobStartTimeMsg, _OpConCliArguments.getJobName(), 
+										_OpConCliArguments.getScheduleName(), zdtime.format(formatter)));
+								completionCode = 0;
+							} else {
+								
+								LOG.error(MessageFormat.format(JobActionEstimatedJobStartTimeInvalidTimeErrorMsg, _OpConCliArguments.getJobName(), 
+										_OpConCliArguments.getScheduleName(), _OpConCliArguments.getTaskDate()));
+								completionCode = 1;
+							}
+						} else {
+							LOG.error(MessageFormat.format(JobActionEstimatedJobStartTimeJobNotFoundErrorMsg, _OpConCliArguments.getJobName(), 
+									_OpConCliArguments.getScheduleName(), _OpConCliArguments.getTaskDate()));
+							completionCode = 1;
+						}
+					} else {
+						completionCode = _IJob.jobActionRequest(opconApi, _OpConCliArguments);
+					}
+					
 					break;
 			
 				case JobAdd:

@@ -23,7 +23,7 @@ The opconcli program provides the following tasks:
 - **AppToken**: Used to create an application token
 - **Dependency**: Used to check a job dependency on a remote OpCon System. It tracks the execution of the remote job waiting for job completion. Retrieves the job log of the remote job and terminates with the same termination code as the remote job (requires OpCon 17.1 or greater).
 - **GetJobLog**: Retrieve the job log of a job in a schedule in the Daily tables (requires OpCon 17.1 or greater).
-- **JobAction**: JobAction	Performs an action on a job in the Daily tables (available actions are hold, cancel, skip, kill, start, restart, forceRestart, restartOnHold, release, markFinishedOk, markFailed, markUnderReview, markFixed).
+- **JobAction**: JobAction	Performs an action on a job in the Daily tables (available actions are estimatedStartTime, hold, cancel, skip, kill, start, restart, forceRestart, restartOnHold, release, markFinishedOk, markFailed, markUnderReview, markFixed).
 - **JobAdd**: Add a job to schedule in the Daily tables. Includes an option to wait for the completion of the job that has been added.
 - **MachAction**: Performs an action on a machine or list of machines (available actions are up, down, limited, wlimited). The option wlimited option, sets the machine into limited state and waits until all current executing jobs on the machine to complete before returning.
 - **MachAdd**: Add a machine or list of machines to the OpCon System.

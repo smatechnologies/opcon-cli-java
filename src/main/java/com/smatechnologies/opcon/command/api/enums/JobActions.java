@@ -2,6 +2,7 @@ package com.smatechnologies.opcon.command.api.enums;
 
 public enum JobActions {
 
+	estimatedStartTime,
 	hold,
 	cancel,
 	skip,

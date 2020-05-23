@@ -132,11 +132,18 @@ Arguments | Description
 **-d** | Optional field that defines the Date of the request. If not present, the current date will be used. Date format is YYYY-MM-DD.
 **-sn** | The name of the schedule in the Daily tables to add the job to.
 **-jn** | The name of the job to add to the schedule in the Daily tables.
-**-ja** | The action to be performed on the job. Possible values: **hold**, **cancel**, **skip**, **kill**, **start**, **restart**, **forceRestart**, **restartOnHold**, **release**, **markFinishedOk**, **markFailed**, **markUnderReview**, **markFixed**. Action is case-sensitive.
+**-ja** | The action to be performed on the job. Possible values: **estimatedStartTime**, **hold**, **cancel**, **skip**, **kill**, **start**, **restart**, **forceRestart**, **restartOnHold**, **release**, **markFinishedOk**, **markFailed**, **markUnderReview**, **markFixed**. Action is case-sensitive.
+
+NOTE : When using estimatedStartTime action, once the start time calculator has processed the job start time, it will be returned as dd/mm/yyyy : HH:mm.
 
 Example 1 : Cancel job TEST_ADD_JOB of schedule TEST_JOB_ADD for today’s date.
 ```
 opconcli.exe -t JobAction -sn TEST_JOB_ADD -jn TEST_ADD_JOB -ja cancel -o OPCONA
+```
+
+Example 2 : Get estimated start time for job TEST_ADD_JOB of schedule TEST_JOB_ADD for today’s date.
+```
+opconcli.exe -t JobAction -sn TEST_JOB_ADD -jn TEST_ADD_JOB -ja estimatedStartTime -o OPCONA
 ```
 
 ### JobAdd
