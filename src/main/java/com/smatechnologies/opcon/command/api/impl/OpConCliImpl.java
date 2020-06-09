@@ -66,7 +66,7 @@ public class OpConCliImpl implements IOpConCli {
 	private static final String JobActionMissingScheduleNameMsg =         "Required -sn (schedule name) argument missing for JobAction task";
 	private static final String JobActionMissingJobNameMsg =              "Required -jn (job name) argument missing for JobAction task";
 	private static final String JobActionMissingJobActionMsg =            "Required -ja (job action) argument missing for JobAction task";
-	private static final String JobActionEstimatedJobStartTimeMsg =       "Estimated Start time for Job {0} of Schedule {1} is {2} ";
+	private static final String JobActionEstimatedJobStartTimeMsg =       "Estimated Start time for Job {0} of Schedule {1} on Schedule Date {2} is : {3} ";
 	private static final String JobActionEstimatedJobStartTimeJobNotFoundErrorMsg =  "Job {0} of Schedule {1} on Date {2} not found";
 	private static final String JobActionEstimatedJobStartTimeInvalidTimeErrorMsg =  "Estimated Start Time for Job {0} of Schedule {1} on Date {2} invalid";
 	
@@ -115,7 +115,8 @@ public class OpConCliImpl implements IOpConCli {
 	private static final String UrlFormatTls = "https://{0}:{1}/api";
 	private static final String UrlFormatNonTls = "http://{0}:{1}/api";
 	
-	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy : HH:mm");
+	private DateTimeFormatter formatterScheduleDate = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	private DateTimeFormatter formatterStartTime = DateTimeFormatter.ofPattern("dd/MM/yyyy : HH:mm");
 	
 	private final static Logger LOG = LoggerFactory.getLogger(OpConCliImpl.class);
 	private static CmdConfiguration _CmdConfiguration = CmdConfiguration.getInstance();
@@ -248,9 +249,10 @@ public class OpConCliImpl implements IOpConCli {
 							// retrieve the estimated start time
 							dailyJob.getComputedStartTime();
 							if(dailyJob.getComputedStartTime() != null) {
-								ZonedDateTime zdtime = dailyJob.getComputedStartTime().getTime();
+								ZonedDateTime zdEstimatedStartTime = dailyJob.getComputedStartTime().getTime();
+								ZonedDateTime zdScheduleDate = dailyJob.getFrequency().getJobTimesEstimation().getParentScheduleStartTime();
 								LOG.info(MessageFormat.format(JobActionEstimatedJobStartTimeMsg, _OpConCliArguments.getJobName(), 
-										_OpConCliArguments.getScheduleName(), zdtime.format(formatter)));
+										_OpConCliArguments.getScheduleName(), zdScheduleDate.format(formatterScheduleDate), zdEstimatedStartTime.format(formatterStartTime)));
 								completionCode = 0;
 							} else {
 								
