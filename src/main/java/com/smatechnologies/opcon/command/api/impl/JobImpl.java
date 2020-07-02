@@ -2,6 +2,7 @@ package com.smatechnologies.opcon.command.api.impl;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,6 +52,9 @@ public class JobImpl implements IJob {
 	private static final String JobActionSuccessMsg =                 "Date ({0}) : action ({1}) on job ({2}) of schedule ({3}) completed successfully";
 	private static final String JobActionFailedMsg =                  "Job action ({0}) failed : {1}";
 	private static final String JobNotFoundInDailyMsg =               "Job ({0}) Schedule ({1}) Date ({2}) not found in Daily tables";
+	private static final String JobActionEstimatedJobStartTimeMsg =       "Estimated Start time for Job {0} of Schedule {1} on Schedule Date {2} is : {3} ";
+	private static final String JobActionEstimatedJobStartTimeJobNotFoundErrorMsg =  "Job {0} of Schedule {1} on Date {2} not found";
+	private static final String JobActionEstimatedJobStartTimeInvalidTimeErrorMsg =  "Estimated Start Time for Job {0} of Schedule {1} on Date {2} invalid";
 	
 	private static final String ArgumentsMsg =                        "arguments";
 	private static final String DisplayTaskDateArgumentMsg =          "-d   (date)                : {0}";
@@ -69,6 +73,8 @@ public class JobImpl implements IJob {
 	private static final String JobLogHeaderMsg =                     "Job Log : {0}";	
 
 	DateTimeFormatter localDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	private DateTimeFormatter formatterScheduleDate = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	private DateTimeFormatter formatterStartTime = DateTimeFormatter.ofPattern("dd/MM/yyyy : HH:mm");
 
 	private final static Logger LOG = LoggerFactory.getLogger(JobImpl.class);
 	private Utilities _Utilities = new Utilities();
@@ -108,26 +114,51 @@ public class JobImpl implements IJob {
 			List<JobAction.Job> jobs = new ArrayList<JobAction.Job>();
 			DailySchedule dailySchedule = checkIfDailyScheduleExists(opconApi, _OpConCliArguments);
 			if(dailySchedule != null) {
-				JobAction.Job job = new JobAction.Job();
-				job.setId(dailySchedule.getId() + ICmdConstants.PIPE + _OpConCliArguments.getJobName());
-				jobs.add(job);
-				jobAction.setAction(getJobAction(_OpConCliArguments.getJobAction()));
-				jobAction.setJobs(jobs);
-				JobAction retJobAction = opconApi.jobActions().post(jobAction);
-				if(retJobAction.getResult() == Result.SUCCESS) {
-					LOG.info(MessageFormat.format(JobAddSuccessMsg,  _OpConCliArguments.getTaskDate(), _OpConCliArguments.getJobAction(),  _OpConCliArguments.getJobName(),  _OpConCliArguments.getScheduleName()));
-					success = 0;
+				if(_OpConCliArguments.getJobAction().equalsIgnoreCase(JobActions.estimatedStartTime.name())) {
+					// get the daily job
+					DailyJob dailyJob = getDailyJobByName(opconApi, _OpConCliArguments);
+					if(dailyJob != null) {
+						// retrieve the estimated start time
+						dailyJob.getComputedStartTime();
+						if(dailyJob.getComputedStartTime() != null) {
+							ZonedDateTime zdEstimatedStartTime = dailyJob.getComputedStartTime().getTime();
+							LocalDate scheduleDate = dailyJob.getSchedule().getDate();
+							LOG.info(MessageFormat.format(JobActionEstimatedJobStartTimeMsg, _OpConCliArguments.getJobName(), 
+									_OpConCliArguments.getScheduleName(), scheduleDate.format(formatterScheduleDate), zdEstimatedStartTime.format(formatterStartTime)));
+							success = 0;
+						} else {
+							
+							LOG.error(MessageFormat.format(JobActionEstimatedJobStartTimeInvalidTimeErrorMsg, _OpConCliArguments.getJobName(), 
+									_OpConCliArguments.getScheduleName(), _OpConCliArguments.getTaskDate()));
+							success = 1;
+						}
+					} else {
+						LOG.error(MessageFormat.format(JobActionEstimatedJobStartTimeJobNotFoundErrorMsg, _OpConCliArguments.getJobName(), 
+								_OpConCliArguments.getScheduleName(), _OpConCliArguments.getTaskDate()));
+						success = 1;
+					}
 				} else {
-					LOG.error(MessageFormat.format(JobAddFailedMsg, _OpConCliArguments.getJobAction(), retJobAction.getReason()));
-					LOG.error(ArgumentsMsg);
-					LOG.error(MessageFormat.format(DisplayTaskDateArgumentMsg, _OpConCliArguments.getTaskDate()));
-					LOG.error(MessageFormat.format(DisplayScheduleNameArgumentMsg, _OpConCliArguments.getScheduleName()));
-					LOG.error(MessageFormat.format(DisplayJobNameArgumentMsg, _OpConCliArguments.getJobName()));
-					LOG.error(MessageFormat.format(DisplayJobActionArgumentMsg, _OpConCliArguments.getJobAction()));
-					success = 1;
+					JobAction.Job job = new JobAction.Job();
+					job.setId(dailySchedule.getId() + ICmdConstants.PIPE + _OpConCliArguments.getJobName());
+					jobs.add(job);
+					jobAction.setAction(getJobAction(_OpConCliArguments.getJobAction()));
+					jobAction.setJobs(jobs);
+					JobAction retJobAction = opconApi.jobActions().post(jobAction);
+					if(retJobAction.getResult() == Result.SUCCESS) {
+						LOG.info(MessageFormat.format(JobActionSuccessMsg,  _OpConCliArguments.getTaskDate(), _OpConCliArguments.getJobAction(),  _OpConCliArguments.getJobName(),  _OpConCliArguments.getScheduleName()));
+						success = 0;
+					} else {
+						LOG.error(MessageFormat.format(JobActionFailedMsg, _OpConCliArguments.getJobAction(), retJobAction.getReason()));
+						LOG.error(ArgumentsMsg);
+						LOG.error(MessageFormat.format(DisplayTaskDateArgumentMsg, _OpConCliArguments.getTaskDate()));
+						LOG.error(MessageFormat.format(DisplayScheduleNameArgumentMsg, _OpConCliArguments.getScheduleName()));
+						LOG.error(MessageFormat.format(DisplayJobNameArgumentMsg, _OpConCliArguments.getJobName()));
+						LOG.error(MessageFormat.format(DisplayJobActionArgumentMsg, _OpConCliArguments.getJobAction()));
+						success = 1;
+					}
 				}
 			} else {
-				LOG.error(MessageFormat.format(JobAddFailedMsg, _OpConCliArguments.getJobAction(), "Schedule not found in Daily"));
+				LOG.error(MessageFormat.format(JobActionFailedMsg, _OpConCliArguments.getJobAction(), "Schedule not found in Daily"));
 				success = 1;
 			}
 		} else {

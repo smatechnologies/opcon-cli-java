@@ -4,6 +4,7 @@ public enum TaskType {
 
 	AppToken,
 	Dependency,
+	ExpEval,
 	GetJobLog,
 	JobAction,
 	JobAdd,

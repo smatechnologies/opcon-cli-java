@@ -9,6 +9,7 @@ It consists of a single program **opconcli.exe** for Windows and **opconcli** fo
 
 ### Environement
 - Uses the OpCon Rest-API to perform the functions, so an OpCon Rest-API license is required.
+- Requires **OpCon 18.3.x** or greater.
 
 - The command lien utility needs **Java version 11** to function
   - An embedded JavaRuntimeEnvironment 11 is included along with the delivery zip / tar files. Once the archive extracted, "/java" directory contains the JRE binaries.
@@ -101,6 +102,19 @@ Arguments | Description
 **-d** | Optional field that defines the Date of the request. If not present, the current date will be used. Date format is YYYY-MM-DD.
 **-sn** | The name of the schedule in the Daily tables to add the job to.
 **-jn** | The name of the job to add to the schedule in the Daily tables.
+
+### ExpEval
+Can be used used to evaluate an OpCon expression.
+
+Example 1 : Insert a valueinto a property.
+```
+opconcli.exe -t ExpEval -ev "[[PROP1]]=\"123456\"" -o OPCONA
+```
+
+Arguments | Description
+--------- | -----------
+**-t** | Value is **ExpEval**
+**-ev** | The expression to evalute.
 
 ### GetJobLog
 Retrieves the job log of an OpCon job.
@@ -332,8 +346,17 @@ Uses expression evaluation to create or update properties. Supports global and i
 Arguments | Description
 --------- | -----------
 **-t** | Value **PropExp** 
-**-pn** | The name of the property to update.
+**-pn** | The name of the property to update (if instance property (SI, JI, etc) must be the fully qualified name).
 **-pv** | The value of the property.
+
+Example 1 : Update the value of property PROP1.
+```
+opconcli.exe -t PropExp -pn PROP1 -pv "123456" -o OPCONA
+```
+Example 2 : Update the schedule Instance property NUMBER in schedule SCHED001 on the first of July 2020.
+```
+opconcli.exe -t PropExp -pn SI.NUMBER.2020-07-01.SCHED001 -pv "55" -o OPCONA
+```
 
 ### PropUpdate
 Updates the contents of a global property.

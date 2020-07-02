@@ -9,10 +9,10 @@ public class OpConCliArguments {
 	public static final String JobNameArgumentDescriptionMsg = "(Optional) Required for JobAdd, JobAction, JobLog - The name of the job)";
 	public static final String JobActionArgumentDescriptionMsg = "(Optional) Required for JobAction - The new status of the job (values cancel, skip, hold, etc)";
 	public static final String PropertiesArgumentDescriptionMsg = "(Optional) A list of properties to be added (format : name=value,name=value)";
-	public static final String TaskArgumentDescriptionMsg = "Task to execute (values AppToken, Dependency, GetJobLog ,JobAdd, JobAction, JobLog, MachAction, MachAdd, MachGrpAdd, MachGrpRemove, MachUpdate, PropExp, PropUpdate, SchedBuild, SchedAction, SchedRebuild, ThreshUpdate)";
+	public static final String TaskArgumentDescriptionMsg = "Task to execute (values AppToken, Dependency, ExpEval, GetJobLog ,JobAdd, JobAction, JobLog, MachAction, MachAdd, MachGrpAdd, MachGrpRemove, MachUpdate, PropExp, PropUpdate, SchedBuild, SchedAction, SchedRebuild, ThreshUpdate)";
 	public static final String ScheduleNameArgumentDescriptionMsg = "(Optional) Required for SchedAction, SchedBuild, JobAdd, JobAction, JobLog - The name of the schedule)";
-	public static final String PropertyNameArgumentDescriptionMsg = "(Optional) Required for PropUpdate - The name of the property";
-	public static final String PropertyValueArgumentDescriptionMsg = "(Optional) Required for PropUpdate - The value of the property";
+	public static final String PropertyNameArgumentDescriptionMsg = "(Optional) Required for PropUpdate, PropExp - The name of the property";
+	public static final String PropertyValueArgumentDescriptionMsg = "(Optional) Required for PropUpdate, PropExp - The value of the property";
 	public static final String PropertyEncryptedArgumentDescriptionMsg = "(Optional) Optional for PropUpdate - Indicates if the property is encrypted (values true or false)";
 	public static final String BuildOnHoldArgumentDescriptionMsg = "(Optional) Optional for SchedBuild - indicates if the schedule should be built on hold)";
 	public static final String JobAddOnHoldArgumentDescriptionMsg = "(Optional) Optional for JobAdd - indicates if the job should be added on hold)";
@@ -35,7 +35,7 @@ public class OpConCliArguments {
 	public static final String MachineUpdateIpAddressArgumentDescriptionMsg = "(Optional) Optional for MachUpdate - The updated ip address of the machine";
 	public static final String MachineUpdateDnsAddressArgumentDescriptionMsg = "(Optional) SOptional for MachUpdate - The updated dns address of the machine";
 	public static final String ScheduleRebuildNoOfDayArgumentDescriptionMsg = "(Optional) Required for SchedRebuild - The number of days in advance to rebuild for";
-	public static final String PropertExpressionArgumentDescriptionMsg = "(Optional) Required for PropExp - The expression to evaluate";
+	public static final String ExpressionEvaluationArgumentDescriptionMsg = "(Optional) Required for ExpEval - The expression to evaluate";
 	public static final String ScheduleRebuildIndicatorsArgumentDescriptionMsg = "(Optional) Optional for SchedRebuild - An indicator used to determine if a schedule should be rebuilt - checks if the schedule name starts with this value";
 
 	@Parameter(names="-ap", description = ApplicationNameArgumentDescriptionMsg)
@@ -44,8 +44,8 @@ public class OpConCliArguments {
 	@Parameter(names="-d", description = DateArgumentDescriptionMsg)
 	private String taskDate = null;
 	
-	@Parameter(names="-ev", description = PropertExpressionArgumentDescriptionMsg)
-	private String propertyExpression = null;
+	@Parameter(names="-ev", description = ExpressionEvaluationArgumentDescriptionMsg)
+	private String expression = null;
 
 	@Parameter(names="-jf", description = FrequencyNameArgumentDescriptionMsg)
 	private String frequencyName = null;
@@ -363,12 +363,12 @@ public class OpConCliArguments {
 		this.noOfDaysToRebuild = noOfDaysToRebuild;
 	}
 
-	public String getPropertyExpression() {
-		return propertyExpression;
+	public String getExpression() {
+		return expression;
 	}
 
-	public void setPropertyExpression(String propertyExpression) {
-		this.propertyExpression = propertyExpression;
+	public void setExpression(String expression) {
+		this.expression = expression;
 	}
 
 	public String getScheduleRebuildIndicator() {

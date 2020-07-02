@@ -6,6 +6,7 @@ machine groups, jobs, properties, thresholds and schedules.
 
 # Prerequisites
 - Uses the OpCon Rest-API to perform the functions, so an OpCon Rest-API license is required.
+- requires **OpCon 18.3** or greater.
 - This command line utility requires **Java version 11** to function:
   - An embedded OpenJDK JRE is included along with the delivery zip/tar files, and can be found under "/java" folder. So no need to install it manually on your environment.
 
@@ -22,6 +23,7 @@ The opconcli program provides the following tasks:
 
 - **AppToken**: Used to create an application token
 - **Dependency**: Used to check a job dependency on a remote OpCon System. It tracks the execution of the remote job waiting for job completion. Retrieves the job log of the remote job and terminates with the same termination code as the remote job (requires OpCon 17.1 or greater).
+- **ExpEval**: Evaluates an OpCon expression.
 - **GetJobLog**: Retrieve the job log of a job in a schedule in the Daily tables (requires OpCon 17.1 or greater).
 - **JobAction**: JobAction	Performs an action on a job in the Daily tables (available actions are estimatedStartTime, hold, cancel, skip, kill, start, restart, forceRestart, restartOnHold, release, markFinishedOk, markFailed, markUnderReview, markFixed).
 - **JobAdd**: Add a job to schedule in the Daily tables. Includes an option to wait for the completion of the job that has been added.

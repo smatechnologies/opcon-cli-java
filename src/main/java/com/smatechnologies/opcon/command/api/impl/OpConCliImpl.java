@@ -7,6 +7,8 @@ import java.io.FileWriter;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -32,7 +34,7 @@ import com.smatechnologies.opcon.command.api.interfaces.IGlobalProperty;
 import com.smatechnologies.opcon.command.api.interfaces.IJob;
 import com.smatechnologies.opcon.command.api.interfaces.IMachine;
 import com.smatechnologies.opcon.command.api.interfaces.IMachineGroup;
-import com.smatechnologies.opcon.command.api.interfaces.IPropertyExpression;
+import com.smatechnologies.opcon.command.api.interfaces.IExpression;
 import com.smatechnologies.opcon.command.api.interfaces.ISchedule;
 import com.smatechnologies.opcon.command.api.interfaces.IThreshold;
 import com.smatechnologies.opcon.command.api.interfaces.IToken;
@@ -57,6 +59,9 @@ public class OpConCliImpl implements IOpConCli {
 	private static final String DependencyMissingScheduleNameMsg =        "Required -sn (schedule name) argument missing for JobAdd task";
 	private static final String DependencyMissingJobNameMsg =             "Required -jn (job name) argument missing for JobAdd task";
 
+	private static final String ExpressionEvalProcessingTaskMsg =         "Processing task ({0}) arguments : expression ({1})";
+	private static final String ExpressionEvalMissingExpressionMsg =      "Required -ev (expression) argument missing for ExpEval task";
+
 	private static final String JobAddProcessingTaskMsg =                 "Processing task ({0}) arguments : date ({1}) schedule ({2}) job ({3}) frequency ({4}) properties ({5}) onhold ({6})";
 	private static final String JobAddMissingScheduleNameMsg =            "Required -sn (schedule name) argument missing for JobAdd task";
 	private static final String JobAddMissingJobNameMsg =                 "Required -jn (job name) argument missing for JobAdd task";
@@ -66,9 +71,6 @@ public class OpConCliImpl implements IOpConCli {
 	private static final String JobActionMissingScheduleNameMsg =         "Required -sn (schedule name) argument missing for JobAction task";
 	private static final String JobActionMissingJobNameMsg =              "Required -jn (job name) argument missing for JobAction task";
 	private static final String JobActionMissingJobActionMsg =            "Required -ja (job action) argument missing for JobAction task";
-	private static final String JobActionEstimatedJobStartTimeMsg =       "Estimated Start time for Job {0} of Schedule {1} on Schedule Date {2} is : {3} ";
-	private static final String JobActionEstimatedJobStartTimeJobNotFoundErrorMsg =  "Job {0} of Schedule {1} on Date {2} not found";
-	private static final String JobActionEstimatedJobStartTimeInvalidTimeErrorMsg =  "Estimated Start Time for Job {0} of Schedule {1} on Date {2} invalid";
 	
 	private static final String JobLogProcessingTaskMsg =                 "Processing task ({0}) arguments : date ({1}) schedule ({2}) job ({3}) file ({4})";
 	private static final String JobLogMissingScheduleNameMsg =            "Required -sn (schedule name) argument missing for JobLog task";
@@ -92,7 +94,8 @@ public class OpConCliImpl implements IOpConCli {
 	private static final String MachineUpdateMissingNameMsg =		      "Required -mn (machine names) argument missing for MachUpdate task";
 
 	private static final String PropertyExpProcessingTaskMsg =            "Processing task ({0}) arguments : expression ({1})";
-	private static final String PropertExpMissingExpressionMsg = 	      "Required -ev (expression) argument missing for PropExp task";
+	private static final String PropertyExpMissingNameMsg = 	  	      "Required -pn (property name) argument missing for PropExp task";
+	private static final String PropertyExpMissingValueMsg = 	          "Required -pv (property value) argument missing for PropExp task";
 
 	private static final String PropertyProcessingUpdateTaskMsg =         "Processing task ({0}) arguments : property ({1}) value ({2}) encrypted ({3})";
 	private static final String PropertyUpdateMissingNameMsg = 	  	      "Required -pn (property name) argument missing for PropUpdate task";
@@ -115,9 +118,6 @@ public class OpConCliImpl implements IOpConCli {
 	private static final String UrlFormatTls = "https://{0}:{1}/api";
 	private static final String UrlFormatNonTls = "http://{0}:{1}/api";
 	
-	private DateTimeFormatter formatterScheduleDate = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-	private DateTimeFormatter formatterStartTime = DateTimeFormatter.ofPattern("dd/MM/yyyy : HH:mm");
-	
 	private final static Logger LOG = LoggerFactory.getLogger(OpConCliImpl.class);
 	private static CmdConfiguration _CmdConfiguration = CmdConfiguration.getInstance();
 	private DefaultObjectMapperProvider _DefaultObjectMapperProvider = new DefaultObjectMapperProvider();
@@ -126,7 +126,7 @@ public class OpConCliImpl implements IOpConCli {
 	private IGlobalProperty _IGlobalProperty = new GlobalPropertyImpl();
 	private IMachine _IMachine = new MachineImpl();
 	private IMachineGroup _IMachineGroup = new MachineGroupImpl();
-	private IPropertyExpression _IPropertyExpression = new PropertyExpressionImpl();
+	private IExpression _IExpression = new ExpressionImpl();
 	private ISchedule _ISchedule = new ScheduleImpl();
 	private IThreshold _IThreshold = new ThresholdImpl();
 	private IToken _IToken = new TokenImpl();
@@ -184,6 +184,19 @@ public class OpConCliImpl implements IOpConCli {
 					completionCode = _IDependency.remoteDependency(opconApi, _OpConCliArguments);
 					break;
 				
+				case ExpEval:
+					
+					if(_OpConCliArguments.getExpression() == null) {
+						LOG.error(ExpressionEvalMissingExpressionMsg);
+						return 1;
+					}
+					LOG.info(MessageFormat.format(ExpressionEvalProcessingTaskMsg, 
+							_OpConCliArguments.getTask(),
+							_OpConCliArguments.getExpression()
+							));
+					completionCode = _IExpression.expressionEvaluationRequest(opconApi, _OpConCliArguments);
+					break;
+	
 				case GetJobLog:
 					if(_OpConCliArguments.getScheduleName() == null) {
 						LOG.error(JobLogMissingScheduleNameMsg);
@@ -242,33 +255,7 @@ public class OpConCliImpl implements IOpConCli {
 					}
 					LOG.info(MessageFormat.format(JobActionProcessingTaskMsg,_OpConCliArguments.getTask(),_OpConCliArguments.getTaskDate(),_OpConCliArguments.getScheduleName(),
 							_OpConCliArguments.getJobName(),_OpConCliArguments.getJobAction()));
-					if(_OpConCliArguments.getJobAction().equalsIgnoreCase(JobActions.estimatedStartTime.name())) {
-						// get the daily job
-						DailyJob dailyJob = _IJob.getDailyJobByName(opconApi, _OpConCliArguments);
-						if(dailyJob != null) {
-							// retrieve the estimated start time
-							dailyJob.getComputedStartTime();
-							if(dailyJob.getComputedStartTime() != null) {
-								ZonedDateTime zdEstimatedStartTime = dailyJob.getComputedStartTime().getTime();
-								ZonedDateTime zdScheduleDate = dailyJob.getFrequency().getJobTimesEstimation().getParentScheduleStartTime();
-								LOG.info(MessageFormat.format(JobActionEstimatedJobStartTimeMsg, _OpConCliArguments.getJobName(), 
-										_OpConCliArguments.getScheduleName(), zdScheduleDate.format(formatterScheduleDate), zdEstimatedStartTime.format(formatterStartTime)));
-								completionCode = 0;
-							} else {
-								
-								LOG.error(MessageFormat.format(JobActionEstimatedJobStartTimeInvalidTimeErrorMsg, _OpConCliArguments.getJobName(), 
-										_OpConCliArguments.getScheduleName(), _OpConCliArguments.getTaskDate()));
-								completionCode = 1;
-							}
-						} else {
-							LOG.error(MessageFormat.format(JobActionEstimatedJobStartTimeJobNotFoundErrorMsg, _OpConCliArguments.getJobName(), 
-									_OpConCliArguments.getScheduleName(), _OpConCliArguments.getTaskDate()));
-							completionCode = 1;
-						}
-					} else {
-						completionCode = _IJob.jobActionRequest(opconApi, _OpConCliArguments);
-					}
-					
+					completionCode = _IJob.jobActionRequest(opconApi, _OpConCliArguments);
 					break;
 			
 				case JobAdd:
@@ -399,16 +386,20 @@ public class OpConCliImpl implements IOpConCli {
 					break;
 
 				case PropExp:
-					
-					if(_OpConCliArguments.getPropertyExpression() == null) {
-						LOG.error(PropertExpMissingExpressionMsg);
+					if(_OpConCliArguments.getPropertyName() == null) {
+						LOG.error(PropertyExpMissingNameMsg);
+						return 1;
+					}
+					if(_OpConCliArguments.getPropertyValue() == null) {
+						LOG.error(PropertyExpMissingValueMsg);
 						return 1;
 					}
 					LOG.info(MessageFormat.format(PropertyExpProcessingTaskMsg, 
 							_OpConCliArguments.getTask(),
-							_OpConCliArguments.getPropertyExpression()
+							_OpConCliArguments.getPropertyName(),
+							_OpConCliArguments.getPropertyValue()
 							));
-					completionCode = _IPropertyExpression.propertyExpressionRequest(opconApi, _OpConCliArguments);
+					completionCode = _IExpression.propertyExpressionRequest(opconApi, _OpConCliArguments);
 					break;
 	
 				case PropUpdate:
@@ -421,7 +412,10 @@ public class OpConCliImpl implements IOpConCli {
 						return 1;
 					}
 
-					LOG.info(MessageFormat.format(PropertyProcessingUpdateTaskMsg, _OpConCliArguments.getTask(), _OpConCliArguments.getPropertyName(), _OpConCliArguments.getPropertyValue(), _OpConCliArguments.isPropertyEncrypted()));
+					LOG.info(MessageFormat.format(PropertyProcessingUpdateTaskMsg,
+							_OpConCliArguments.getTask(), _OpConCliArguments.getPropertyName(), 
+							_OpConCliArguments.getPropertyValue(), 
+							_OpConCliArguments.isPropertyEncrypted()));
 					completionCode = _IGlobalProperty.updateProperty(opconApi, _OpConCliArguments);
 					break;
 

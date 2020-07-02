@@ -116,6 +116,12 @@ public class Utilities {
 				}
 				break;
 
+			case ExpEval:
+				if(checkNumber >= testNumber171) {
+					versionOK = true;
+				}
+				break;
+
 			case Dependency:
 				if(checkNumber >= testNumber171) {
 					versionOK = true;
