@@ -94,7 +94,7 @@ opconcli.exe -t AppToken -ap MY_CUSTOM_APP -o OPCONA
 ```
 
 ### Dependency
-Can be used create a remote dependency on a job in another OpCon system. Tracks the job and returns the termination code of the job being tracked. Also returns the job log of the remote job.
+Can be used create a remote dependency on a job in another OpCon system. Tracks the job and returns the termination code of the job being tracked. Also returns the job log of the remote job. Note when tracking a NULL Job, the returned termination code will be 0.
 
 Arguments | Description
 --------- | -----------

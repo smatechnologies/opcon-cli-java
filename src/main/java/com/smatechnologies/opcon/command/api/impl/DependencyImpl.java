@@ -77,18 +77,24 @@ public class DependencyImpl implements IDependency {
 					}
 					uCode = uCode.replaceAll(ICmdConstants.PLUS, ICmdConstants.EMPTY_STRING);
 					success = Integer.parseInt(uCode);
+				} else if(jobMonitorData.getType() == -1) {		// NULL
+					// set NULL job to 0
+					success = 0;
 				} else {
 					success = Integer.parseInt(jobMonitorData.getTerminationCode());
 				}
-				List<JobLogData> jobLogDataList = _IJob.getJobLogByDailyJob(opconApi, dailyJob);
-				LOG.info(SeperatorLineMsg);
-				LOG.info(JobLogHeaderMsg);
-				LOG.info(SeperatorLineMsg);
-				for(JobLogData jobLogData : jobLogDataList) {
-					for(String record : jobLogData.getRecords()) {
-						LOG.info(MessageFormat.format(JobLogLineMsg, record));
+				if((!(jobMonitorData.getType() == -1)) &&
+						(!(jobMonitorData.getType() == 15))) {
+					List<JobLogData> jobLogDataList = _IJob.getJobLogByDailyJob(opconApi, dailyJob);
+					LOG.info(SeperatorLineMsg);
+					LOG.info(JobLogHeaderMsg);
+					LOG.info(SeperatorLineMsg);
+					for(JobLogData jobLogData : jobLogDataList) {
+						for(String record : jobLogData.getRecords()) {
+							LOG.info(MessageFormat.format(JobLogLineMsg, record));
+						}
+		
 					}
-	
 				}
 				LOG.info(MessageFormat.format(MonitorCompletedMsg, _OpConCliArguments.getJobName(), _OpConCliArguments.getScheduleName(), 
 						_OpConCliArguments.getTaskDate(), _OpConCliArguments.getOpConSystem(), String.valueOf(success)));
