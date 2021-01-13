@@ -6,11 +6,11 @@ public class OpConCliArguments {
 
 	public static final String DateArgumentDescriptionMsg = "(Optional) Date to execute on (if not present defaults to current date)";
 	public static final String FrequencyNameArgumentDescriptionMsg = "(Optional ) Required for JobAdd - The frequency name associated with the request)";
-	public static final String JobNameArgumentDescriptionMsg = "(Optional) Required for JobAdd, JobAction, JobLog - The name of the job)";
+	public static final String JobNameArgumentDescriptionMsg = "(Optional) Required for Dependency, JobAdd, JobAction, JobLog - The name of the job)";
 	public static final String JobActionArgumentDescriptionMsg = "(Optional) Required for JobAction - The new status of the job (values cancel, skip, hold, etc)";
 	public static final String PropertiesArgumentDescriptionMsg = "(Optional) A list of properties to be added (format : name=value,name=value)";
 	public static final String TaskArgumentDescriptionMsg = "Task to execute (values AppToken, Dependency, ExpEval, GetJobLog ,JobAdd, JobAction, JobLog, MachAction, MachAdd, MachGrpAdd, MachGrpRemove, MachUpdate, PropExp, PropUpdate, SchedBuild, SchedAction, SchedRebuild, ThreshUpdate)";
-	public static final String ScheduleNameArgumentDescriptionMsg = "(Optional) Required for SchedAction, SchedBuild, JobAdd, JobAction, JobLog - The name of the schedule)";
+	public static final String ScheduleNameArgumentDescriptionMsg = "(Optional) Required for Dependency, SchedAction, SchedBuild, JobAdd, JobAction, JobLog - The name of the schedule)";
 	public static final String PropertyNameArgumentDescriptionMsg = "(Optional) Required for PropUpdate, PropExp - The name of the property";
 	public static final String PropertyValueArgumentDescriptionMsg = "(Optional) Required for PropUpdate, PropExp - The value of the property";
 	public static final String PropertyEncryptedArgumentDescriptionMsg = "(Optional) Optional for PropUpdate - Indicates if the property is encrypted (values true or false)";

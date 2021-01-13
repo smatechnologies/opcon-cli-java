@@ -8,8 +8,11 @@ public interface ICmdConstants {
 	public static final String DASH = "-";
 	public static final String DOLLAR = "$";
 	public static final String DOUBLE_QUOTES = "\"";
+	public static final String DOUBLE_LEFT_SQUARE_BRACKET = "[[";
+	public static final String DOUBLE_RIGHT_SQUARE_BRACKET = "]]";
 	public static final String EQUAL = "=";
 	public static final String EMPTY_STRING = "";
+	public static final String ESCAPED_DOT = "\\.";
 	public static final String LEFT_BRACKET = "(";
 	public static final String LEFT_SQUARE_BRACKET = "[";
 	public static final String PERIOD = ".";
@@ -53,7 +56,13 @@ public interface ICmdConstants {
 	public static final String OPCON_API_USER = "USER";
 	public static final String OPCON_API_PASSWORD = "PASSWORD";
 
-    interface LogBackConstant {
+	   interface PropertyTypes {
+			public static final String OPCON_INSTANCE = "OI.";
+			public static final String SCHEDULE_INSTANCE = "SI.";
+			public static final String JOB_INSTANCE = "JI.";
+	   }
+	
+	interface LogBackConstant {
 
         String LOG_PATH = "logback.path";
         String DEBUG_DEPENDENCIES = "logback.debug.dependencies";

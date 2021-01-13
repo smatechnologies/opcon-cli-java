@@ -1,5 +1,7 @@
 package com.smatechnologies.opcon.command.api.modules;
 
+import com.smatechnologies.opcon.restapiclient.model.dailyjob.DailyJob;
+
 public class JobMonitorData {
 
 	private Integer type = null;
@@ -7,6 +9,7 @@ public class JobMonitorData {
 	private Integer exitCode = null;
 	private String exitDescription = null;
 	private String terminationCode = null;
+	private DailyJob dailyJob = null;
 	
 	public Integer getType() {
 		return type;
@@ -46,6 +49,14 @@ public class JobMonitorData {
 
 	public void setTerminationCode(String terminationCode) {
 		this.terminationCode = terminationCode;
+	}
+
+	public DailyJob getDailyJob() {
+		return dailyJob;
+	}
+
+	public void setDailyJob(DailyJob dailyJob) {
+		this.dailyJob = dailyJob;
 	}
 	
 }

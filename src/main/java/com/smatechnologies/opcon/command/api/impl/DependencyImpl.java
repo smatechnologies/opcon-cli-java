@@ -85,7 +85,8 @@ public class DependencyImpl implements IDependency {
 				}
 				if((!(jobMonitorData.getType() == -1)) &&
 						(!(jobMonitorData.getType() == 15))) {
-					List<JobLogData> jobLogDataList = _IJob.getJobLogByDailyJob(opconApi, dailyJob);
+					System.out.println("dailyjob id (" + dailyJob.getId() + ")");
+					List<JobLogData> jobLogDataList = _IJob.getJobLogByDailyJob(opconApi, jobMonitorData.getDailyJob());
 					LOG.info(SeperatorLineMsg);
 					LOG.info(JobLogHeaderMsg);
 					LOG.info(SeperatorLineMsg);
@@ -127,8 +128,10 @@ public class DependencyImpl implements IDependency {
 					} catch (Exception ex) {
 						try {
 							LOG.error(_Utilities.getExceptionDetails(ex));
+							System.exit(1);
 						} catch (Exception e) {
 							LOG.error(_Utilities.getExceptionDetails(e));
+							System.exit(1);
 						}
 					} 
 		         }
@@ -171,6 +174,7 @@ public class DependencyImpl implements IDependency {
 			) throws Exception {
 
 		try {
+			LOG.debug("getDependentJobStatus:jobid : (" + jobId + ")");
 			WsDailyJobs wsDailyJobs = opconApi.dailyJobs();
 			DailyJob dailyJob = wsDailyJobs.get(jobId);
 			LOG.debug("getDependentJobStatus:dailyJob : (" + dailyJob.getStatus().getId() + ") desc (" + dailyJob.getStatus().getDescription() + ")");
@@ -179,12 +183,6 @@ public class DependencyImpl implements IDependency {
 			
 				case 0:
 					LOG.debug("getDependentJobStatus:status : On Hold");
-					jobMonitorData.setType(dailyJob.getJobType().getId());
-					jobMonitorData.setExitCode(status.getId());
-					jobMonitorData.setExitDescription(status.getDescription().name());
-					jobMonitorData.setTerminationCode(dailyJob.getTerminationDescription());
-					dependentJobCompleted();
-					futureWaitForDependentJobToFinish.cancel(true);
 					break;
 
 				case 210:
@@ -193,6 +191,7 @@ public class DependencyImpl implements IDependency {
 					jobMonitorData.setExitCode(status.getId());
 					jobMonitorData.setExitDescription(status.getDescription().name());
 					jobMonitorData.setTerminationCode(dailyJob.getTerminationDescription());
+					jobMonitorData.setDailyJob(dailyJob);
 					dependentJobCompleted();
 					futureWaitForDependentJobToFinish.cancel(true);
 					break;
@@ -203,6 +202,7 @@ public class DependencyImpl implements IDependency {
 					jobMonitorData.setExitCode(status.getId());
 					jobMonitorData.setExitDescription(status.getDescription().name());
 					jobMonitorData.setTerminationCode(dailyJob.getTerminationDescription());
+					jobMonitorData.setDailyJob(dailyJob);
 					dependentJobCompleted();
 					futureWaitForDependentJobToFinish.cancel(true);
 					break;
@@ -213,6 +213,7 @@ public class DependencyImpl implements IDependency {
 					jobMonitorData.setExitCode(status.getId());
 					jobMonitorData.setExitDescription(status.getDescription().name());
 					jobMonitorData.setTerminationCode(dailyJob.getTerminationDescription());
+					jobMonitorData.setDailyJob(dailyJob);
 					dependentJobCompleted();
 					futureWaitForDependentJobToFinish.cancel(true);
 					break;
@@ -223,6 +224,7 @@ public class DependencyImpl implements IDependency {
 					jobMonitorData.setExitCode(status.getId());
 					jobMonitorData.setExitDescription(status.getDescription().name());
 					jobMonitorData.setTerminationCode(dailyJob.getTerminationDescription());
+					jobMonitorData.setDailyJob(dailyJob);
 					dependentJobCompleted();
 					futureWaitForDependentJobToFinish.cancel(true);
 					break;
@@ -233,6 +235,7 @@ public class DependencyImpl implements IDependency {
 					jobMonitorData.setExitCode(status.getId());
 					jobMonitorData.setExitDescription(status.getDescription().name());
 					jobMonitorData.setTerminationCode(dailyJob.getTerminationDescription());
+					jobMonitorData.setDailyJob(dailyJob);
 					dependentJobCompleted();
 					futureWaitForDependentJobToFinish.cancel(true);
 					break;
@@ -243,6 +246,7 @@ public class DependencyImpl implements IDependency {
 					jobMonitorData.setExitCode(status.getId());
 					jobMonitorData.setExitDescription(status.getDescription().name());
 					jobMonitorData.setTerminationCode(dailyJob.getTerminationDescription());
+					jobMonitorData.setDailyJob(dailyJob);
 					dependentJobCompleted();
 					futureWaitForDependentJobToFinish.cancel(true);
 					break;
@@ -253,6 +257,7 @@ public class DependencyImpl implements IDependency {
 					jobMonitorData.setExitCode(status.getId());
 					jobMonitorData.setExitDescription(status.getDescription().name());
 					jobMonitorData.setTerminationCode(dailyJob.getTerminationDescription());
+					jobMonitorData.setDailyJob(dailyJob);
 					dependentJobCompleted();
 					futureWaitForDependentJobToFinish.cancel(true);
 					break;
