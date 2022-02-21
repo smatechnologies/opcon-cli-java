@@ -9,7 +9,7 @@ It consists of a single program **opconcli.exe** for Windows and **opconcli** fo
 
 ### Environement
 - Uses the OpCon Rest-API to perform the functions, so an OpCon Rest-API license is required.
-- Requires **OpCon 18.3.x** or greater.
+- Requires **OpCon 21.x.x** or greater.
 
 - The command lien utility needs **Java version 11** to function
   - An embedded JavaRuntimeEnvironment 11 is included along with the delivery zip / tar files. Once the archive extracted, "/java" directory contains the JRE binaries.
@@ -135,6 +135,21 @@ opconcli.exe -t GetJobLog -sn TEST_JOB_ADD -jn TEST_ADD_JOB -o OPCONA
 Example 2 : Retrieve job log for job TEST_ADD_JOB tof schedule TEST_JOB_ADD for today’s date writing the log into file in directory c:\temp.
 ```
 opconcli.exe -t GetJobLog -sn TEST_JOB_ADD -jn TEST_ADD_JOB -jld c:\temp -o OPCONA
+```
+
+### GetJobStatus
+Retrieves the status of a job in the daily tables, returning a numeric value.
+
+Arguments | Description
+--------- | -----------
+**-t** | Value is **GetJobStatus**
+**-d** | Optional field that defines the Date of the request. If not present, the current date will be used. Date format is YYYY-MM-DD.
+**-sn** | The name of the schedule in the Daily tables to add the job to.
+**-jn** | The name of the job to add to the schedule in the Daily tables.
+
+Example 1 : Retrieve the status job TEST_ADD_JOB of schedule TEST_JOB_ADD for today’s date.
+```
+opconcli.exe -t GetJobStatus -sn TEST_JOB_ADD -jn TEST_ADD_JOB -o OPCONA
 ```
 
 ### JobAction
@@ -305,7 +320,6 @@ Example 1 : Create machine TEST001 in OpCon system OPCON from template win_macha
 opconcli.exe -t MachAdd -mn TEST001 -mf c:\templates\win_machadd.json -mi 10.0.2.12 -o OPCON
 ```
 
-
 ### MachGrpAdd
 Add a machine or machines to a machine group.
 
@@ -366,7 +380,7 @@ Arguments | Description
 **-t** | Value is **PropUpdate**
 **-pn** | The name of the property to update.
 **-pv** | The value of the property.
-**-pe** | If the property is encrypted (value **true** or **false**)
+**-pe** | Indicates if the property is encrypted (adding -pe indicates property is encrypted)
 
 ### SchedAction
 Performs an action on the schedule in the daily.

@@ -37,6 +37,8 @@ public class OpConCliArguments {
 	public static final String ScheduleRebuildNoOfDayArgumentDescriptionMsg = "(Optional) Required for SchedRebuild - The number of days in advance to rebuild for";
 	public static final String ExpressionEvaluationArgumentDescriptionMsg = "(Optional) Required for ExpEval - The expression to evaluate";
 	public static final String ScheduleRebuildIndicatorsArgumentDescriptionMsg = "(Optional) Optional for SchedRebuild - An indicator used to determine if a schedule should be rebuilt - checks if the schedule name starts with this value";
+	public static final String DefaultErrorCodeArgumentDescriptionMsg = "The error code returned when an error occurs in the opconCli (default -1)";
+	public static final String JobLogFileNameArgumentDescriptionMsg = "(Optional) Defines a filename that the returned joblog must be written into (JobLog)";
 
 	@Parameter(names="-ap", description = ApplicationNameArgumentDescriptionMsg)
 	private String applicationName = null;
@@ -44,6 +46,9 @@ public class OpConCliArguments {
 	@Parameter(names="-d", description = DateArgumentDescriptionMsg)
 	private String taskDate = null;
 	
+	@Parameter(names="-ec", description = DefaultErrorCodeArgumentDescriptionMsg)
+	private Integer errorCode = -1;
+
 	@Parameter(names="-ev", description = ExpressionEvaluationArgumentDescriptionMsg)
 	private String expression = null;
 
@@ -65,6 +70,9 @@ public class OpConCliArguments {
 	@Parameter(names="-jw", description = JobAddWaitForCompletionArgumentDescriptionMsg)
 	private boolean waitForCompletion = false;
 	
+	@Parameter(names="-jlf", description = JobLogFileNameArgumentDescriptionMsg)
+	private String jobLogFileName = null;
+
 	@Parameter(names="-ip", description = PropertiesArgumentDescriptionMsg)
 	private String instanceProperties = null;
 	
@@ -137,6 +145,14 @@ public class OpConCliArguments {
 
 	public void setApplicationName(String applicationName) {
 		this.applicationName = applicationName;
+	}
+
+	public Integer getErrorCode() {
+		return errorCode;
+	}
+
+	public void setErrorCode(Integer errorCode) {
+		this.errorCode = errorCode;
 	}
 
 	public String getTaskDate() {
@@ -377,6 +393,14 @@ public class OpConCliArguments {
 
 	public void setScheduleRebuildIndicator(String scheduleRebuildIndicator) {
 		this.scheduleRebuildIndicator = scheduleRebuildIndicator;
+	}
+
+	public String getJobLogFileName() {
+		return jobLogFileName;
+	}
+
+	public void setJobLogFileName(String jobLogFileName) {
+		this.jobLogFileName = jobLogFileName;
 	}
 
 }

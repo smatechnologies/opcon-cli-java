@@ -108,7 +108,7 @@ public class OpConCli {
 			if(_OpConCliArguments.getTaskDate() != null) {
 				if(!_Utilities.checkDateFormat(_OpConCliArguments.getTaskDate())) {
 					LOG.error(MessageFormat.format(InvalidDateFormatMsg, _OpConCliArguments.getTaskDate()));
-					System.exit(1);
+					System.exit(_OpConCliArguments.getErrorCode());
 				}
 			} else {
 				// use current date
@@ -120,10 +120,10 @@ public class OpConCli {
 			LOG.info(SeperatorLineMsg);
 		} catch (com.beust.jcommander.ParameterException pe) {
 			jcCmdLineArguments.usage();
-			System.exit(1);
+			System.exit(_OpConCliArguments.getErrorCode());
 		} catch (Exception ex) {
 			LOG.error(_Utilities.getExceptionDetails(ex));
-			System.exit(1);
+			System.exit(_OpConCliArguments.getErrorCode());
 		}
 		System.exit(completionCode);
 	} // END : main

@@ -87,6 +87,7 @@ jobs:
           chmod a+x opcon-cli-dist/EncryptValue
           cp opcon-cli-dist/EncryptValue OpConCLI_Linux/
           cp opcon-cli-dist/Connector.config OpConCLI_Linux/
+          cp opcon-cli-dist/opcon.command.api.jar OpConCLI_Linux/
       
       # tar.gz the folder that contains all binaries and configuration to run on Linux (including Java)    
       - name: Zip Linux Folder

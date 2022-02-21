@@ -29,6 +29,7 @@ import com.smatechnologies.opcon.command.api.config.CmdConfiguration;
 import com.smatechnologies.opcon.command.api.enums.JobActions;
 import com.smatechnologies.opcon.command.api.enums.TaskType;
 import com.smatechnologies.opcon.command.api.interfaces.IOpConCli;
+import com.smatechnologies.opcon.command.api.interfaces.ICmdConstants;
 import com.smatechnologies.opcon.command.api.interfaces.IDependency;
 import com.smatechnologies.opcon.command.api.interfaces.IGlobalProperty;
 import com.smatechnologies.opcon.command.api.interfaces.IJob;
@@ -77,6 +78,11 @@ public class OpConCliImpl implements IOpConCli {
 	private static final String JobLogMissingJobNameMsg =                 "Required -jn (job name) argument missing for JobLog task";
 	private static final String JobLogFileMsg =                           "Writing joblog to file ({0})";
 
+	private static final String JobStatusProcessingTaskMsg =              "Processing task ({0}) arguments : date ({1}) schedule ({2}) job ({3})";
+	private static final String JobStatusMissingScheduleNameMsg =         "Required -sn (schedule name) argument missing for JobStatus task";
+	private static final String JobStatusMissingJobNameMsg =              "Required -jn (job name) argument missing for JobStatus task";
+	private static final String JobStatusMsg =                            "Job schedule ({0}) job ({1} status : ({2})";
+
 	private static final String MachineActionProcessingTaskMsg =          "Processing task ({0}) arguments : machine ({1}) action ({2})";
 	private static final String MachineActionMissingNameMsg =		      "Required -mn (machine names) argument missing for MachAction task";
 	private static final String MachineActionMissingActionMsg =	  	      "Required -ma (machine action) argument missing for MachAction task";
@@ -111,6 +117,9 @@ public class OpConCliImpl implements IOpConCli {
 	private static final String ScheduleRebuildProcessingTaskMsg =        "Processing task ({0}) arguments : date ({1}) days ({2}) indicator ({3}))";
 	private static final String ScheduleRebuildMissingDaysToBuildMsg =	  "Required -sd (no of days) argument missing for SchedRebuild task";
 
+	private static final String ThresholdProcessingCreateTaskMsg =        "Processing task ({0}) arguments : threshold ({1}) value ({2})";
+	private static final String ThresholdCreateMissingNameMsg =		      "Required -tn (threshold name) argument missing for ThreshCreate task";
+	private static final String ThresholdCreateMissingValueMsg =	      "Required -tv (threshold value) argument missing for ThreshCreate task";
 	private static final String ThresholdProcessingUpdateTaskMsg =        "Processing task ({0}) arguments : threshold ({1}) value ({2})";
 	private static final String ThresholdUpdateMissingNameMsg =		      "Required -tn (threshold name) argument missing for ThreshUpdate task";
 	private static final String ThresholdUpdateMissingValueMsg =	      "Required -tv (threshold value) argument missing for ThreshUpdate task";
@@ -133,6 +142,22 @@ public class OpConCliImpl implements IOpConCli {
 	private IVersion _IVersion = new VersionImpl();
 	
 	private String displayProperties = null;
+	
+	public OpconApi getOpConApi(
+			) throws Exception {
+
+		String url = null;
+		
+		// create client connection
+		if(_CmdConfiguration.isUsingTls()) {
+			url = MessageFormat.format(UrlFormatTls, _CmdConfiguration.getServer(), String.valueOf(_CmdConfiguration.getPort()));
+		} else {
+			url = MessageFormat.format(UrlFormatNonTls, _CmdConfiguration.getServer(), String.valueOf(_CmdConfiguration.getPort()));
+		}
+		OpconApiProfile profile = new OpconApiProfile(url);
+		OpconApi opconApi = getClient(profile);
+		return opconApi;
+	}
 	
 	public Integer processRequest(
 			OpConCliArguments _OpConCliArguments
@@ -159,7 +184,7 @@ public class OpConCliImpl implements IOpConCli {
 				case AppToken:
 					if(_OpConCliArguments.getApplicationName() == null) {
 						LOG.error(ApplicationTokenMissingNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					LOG.info(MessageFormat.format(ApplicationTokenProcessingMsg, _OpConCliArguments.getTask(), _OpConCliArguments.getApplicationName()));
 					completionCode = _IToken.createApplicationToken(opconApi, _OpConCliArguments);
@@ -168,11 +193,11 @@ public class OpConCliImpl implements IOpConCli {
 				case Dependency:
 					if(_OpConCliArguments.getScheduleName() == null) {
 						LOG.error(DependencyMissingScheduleNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					if(_OpConCliArguments.getJobName() == null) {
 						LOG.error(DependencyMissingJobNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					LOG.info(MessageFormat.format(DependencyProcessingTaskMsg, 
 							_OpConCliArguments.getTask(),
@@ -188,7 +213,7 @@ public class OpConCliImpl implements IOpConCli {
 					
 					if(_OpConCliArguments.getExpression() == null) {
 						LOG.error(ExpressionEvalMissingExpressionMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					LOG.info(MessageFormat.format(ExpressionEvalProcessingTaskMsg, 
 							_OpConCliArguments.getTask(),
@@ -200,11 +225,11 @@ public class OpConCliImpl implements IOpConCli {
 				case GetJobLog:
 					if(_OpConCliArguments.getScheduleName() == null) {
 						LOG.error(JobLogMissingScheduleNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					if(_OpConCliArguments.getJobName() == null) {
 						LOG.error(JobLogMissingJobNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					LOG.info(MessageFormat.format(JobLogProcessingTaskMsg, 
 							_OpConCliArguments.getTask(),
@@ -217,7 +242,12 @@ public class OpConCliImpl implements IOpConCli {
 					for(JobLogData jobLogData : jobLogsData) {
 						if(!jobLogData.getRecords().isEmpty()) {
 							if(_OpConCliArguments.getJobLogDirectory() != null) {  
-								String filename = _OpConCliArguments.getJobLogDirectory() + File.separator + jobLogData.getFilename();
+								String filename = null;
+								if(_OpConCliArguments.getJobLogFileName() != null) {
+									filename = _OpConCliArguments.getJobLogDirectory() + File.separator + _OpConCliArguments.getJobLogFileName();
+								} else {
+									filename = _OpConCliArguments.getJobLogDirectory() + File.separator + jobLogData.getFilename();
+								}
 								LOG.info(MessageFormat.format(JobLogFileMsg, filename));
 								FileWriter fwriter = new FileWriter(filename);
 								BufferedWriter bwrite = new BufferedWriter(fwriter);
@@ -240,18 +270,40 @@ public class OpConCliImpl implements IOpConCli {
 					completionCode = 0;
 					break;
 
+				case GetJobStatus:
+					if(_OpConCliArguments.getScheduleName() == null) {
+						LOG.error(JobStatusMissingScheduleNameMsg);
+						return _OpConCliArguments.getErrorCode();
+					}
+					if(_OpConCliArguments.getJobName() == null) {
+						LOG.error(JobStatusMissingJobNameMsg);
+						return _OpConCliArguments.getErrorCode();
+					}
+					LOG.info(MessageFormat.format(JobStatusProcessingTaskMsg, 
+							_OpConCliArguments.getTask(),
+							_OpConCliArguments.getTaskDate(),
+							_OpConCliArguments.getScheduleName(),
+							_OpConCliArguments.getJobName()
+							));
+					
+					DailyJob dailyJob = _IJob.getDailyJobByName(opconApi, _OpConCliArguments);
+					LOG.info(MessageFormat.format(JobStatusMsg, _OpConCliArguments.getScheduleName(), _OpConCliArguments.getJobName(), dailyJob.getStatus().getDescription()));
+					
+					completionCode = dailyJob.getStatus().getId();
+					break;
+
 				case JobAction:
 					if(_OpConCliArguments.getScheduleName() == null) {
 						LOG.error(JobActionMissingScheduleNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					if(_OpConCliArguments.getJobName() == null) {
 						LOG.error(JobActionMissingJobNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					if(_OpConCliArguments.getJobAction() == null) {
 						LOG.error(JobActionMissingJobActionMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					LOG.info(MessageFormat.format(JobActionProcessingTaskMsg,_OpConCliArguments.getTask(),_OpConCliArguments.getTaskDate(),_OpConCliArguments.getScheduleName(),
 							_OpConCliArguments.getJobName(),_OpConCliArguments.getJobAction()));
@@ -261,11 +313,11 @@ public class OpConCliImpl implements IOpConCli {
 				case JobAdd:
 					if(_OpConCliArguments.getScheduleName() == null) {
 						LOG.error(JobAddMissingScheduleNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					if(_OpConCliArguments.getJobName() == null) {
 						LOG.error(JobAddMissingJobNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					if(_OpConCliArguments.getFrequencyName() == null) {
 						LOG.error(JobAddMissingFrequencyMsg);
@@ -286,11 +338,11 @@ public class OpConCliImpl implements IOpConCli {
 				case MachAction:
 					if(_OpConCliArguments.getMachineName() == null) {
 						LOG.error(MachineActionMissingNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					if(_OpConCliArguments.getMachineAction() == null) {
 						LOG.error(MachineActionMissingActionMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					LOG.info(MessageFormat.format(MachineActionProcessingTaskMsg, _OpConCliArguments.getTask(), _OpConCliArguments.getMachineName(), _OpConCliArguments.getMachineAction()));
 					completionCode = _IMachine.machineAction(opconApi, _OpConCliArguments);
@@ -299,7 +351,7 @@ public class OpConCliImpl implements IOpConCli {
 				case MachAdd:
 					if(_OpConCliArguments.getMachineFileName() == null) {
 						LOG.error(MachineAddMissingFileNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					// get machine data
 					List<Machine> machines = null;
@@ -307,10 +359,10 @@ public class OpConCliImpl implements IOpConCli {
 						machines = getMachineData(_OpConCliArguments.getMachineFileName());
 					} catch (JsonParseException pex) {
 						LOG.error(MessageFormat.format(MachineAddJsonParseErrorMsg, pex.getMessage(), _OpConCliArguments.getMachineFileName()));
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					} catch (Exception ex) {
 						LOG.error(MessageFormat.format(MachineAddFileErrorMsg, ex.getMessage(), _OpConCliArguments.getMachineFileName()));
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					// if only 1 machine definition, check if we need to replace name, ip-address or dns values
 					if(machines.size() == 1) {
@@ -337,11 +389,11 @@ public class OpConCliImpl implements IOpConCli {
 				case MachGrpAdd:
 					if(_OpConCliArguments.getMachineGroupName() == null) {
 						LOG.error(MachineGroupMissingNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					if(_OpConCliArguments.getMachineName() == null) {
 						LOG.error(MachineGroupMissingMachineNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					LOG.info(MessageFormat.format(MachineGroupProcessingTaskMsg, 
 							_OpConCliArguments.getTask(),
@@ -355,11 +407,11 @@ public class OpConCliImpl implements IOpConCli {
 				case MachGrpRemove:
 					if(_OpConCliArguments.getMachineGroupName() == null) {
 						LOG.error(MachineGroupMissingNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					if(_OpConCliArguments.getMachineName() == null) {
 						LOG.error(MachineGroupMissingMachineNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					LOG.info(MessageFormat.format(MachineGroupProcessingTaskMsg, 
 							_OpConCliArguments.getTask(),
@@ -388,11 +440,11 @@ public class OpConCliImpl implements IOpConCli {
 				case PropExp:
 					if(_OpConCliArguments.getPropertyName() == null) {
 						LOG.error(PropertyExpMissingNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					if(_OpConCliArguments.getPropertyValue() == null) {
 						LOG.error(PropertyExpMissingValueMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					LOG.info(MessageFormat.format(PropertyExpProcessingTaskMsg, 
 							_OpConCliArguments.getTask(),
@@ -405,11 +457,11 @@ public class OpConCliImpl implements IOpConCli {
 				case PropUpdate:
 					if(_OpConCliArguments.getPropertyName() == null) {
 						LOG.error(PropertyUpdateMissingNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					if(_OpConCliArguments.getPropertyValue() == null) {
 						LOG.error(PropertyUpdateMissingValueMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 
 					LOG.info(MessageFormat.format(PropertyProcessingUpdateTaskMsg,
@@ -422,11 +474,11 @@ public class OpConCliImpl implements IOpConCli {
 				case SchedAction:
 					if(_OpConCliArguments.getScheduleName() == null) {
 						LOG.error(ScheduleActionMissingScheduleNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					if(_OpConCliArguments.getScheduleAction() == null) {
 						LOG.error(ScheduleActionMissingActionMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					LOG.info(MessageFormat.format(ScheduleActionProcessingTaskMsg, 
 							_OpConCliArguments.getTask(),
@@ -440,7 +492,7 @@ public class OpConCliImpl implements IOpConCli {
 				case SchedBuild:
 					if(_OpConCliArguments.getScheduleName() == null) {
 						LOG.error(ScheduleBuildMissingNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					if(_OpConCliArguments.getInstanceProperties() == null) {
 						displayProperties = "None";
@@ -454,7 +506,7 @@ public class OpConCliImpl implements IOpConCli {
 				case SchedRebuild:
 					if(_OpConCliArguments.getNoOfDaysToRebuild() == null) {
 						LOG.error(ScheduleRebuildMissingDaysToBuildMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					LOG.info(MessageFormat.format(ScheduleRebuildProcessingTaskMsg, 
 							_OpConCliArguments.getTask(),
@@ -468,11 +520,11 @@ public class OpConCliImpl implements IOpConCli {
 				case ThreshUpdate:
 					if(_OpConCliArguments.getThresholdName() == null) {
 						LOG.error(ThresholdUpdateMissingNameMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					if(_OpConCliArguments.getThresholdValue() == null) {
 						LOG.error(ThresholdUpdateMissingValueMsg);
-						return 1;
+						return _OpConCliArguments.getErrorCode();
 					}
 					LOG.info(MessageFormat.format(ThresholdProcessingUpdateTaskMsg, _OpConCliArguments.getTask(), _OpConCliArguments.getThresholdName(), _OpConCliArguments.getThresholdValue()));
 					completionCode = _IThreshold.updateThreshold(opconApi, _OpConCliArguments);
@@ -531,10 +583,15 @@ public class OpConCliImpl implements IOpConCli {
                     }
                 }
             }, ctxObjectMapperProvider);
-			
-			
-			opconApi.login(_CmdConfiguration.getUser(), _CmdConfiguration.getPassword());
-			
+            if(_CmdConfiguration.getToken() != null) {
+                if(!_CmdConfiguration.getToken().equals(ICmdConstants.EMPTY_STRING)) {
+                	opconApi.login(_CmdConfiguration.getToken());
+                } else {
+        			opconApi.login(_CmdConfiguration.getUser(), _CmdConfiguration.getPassword());
+                }
+            } else {
+    			opconApi.login(_CmdConfiguration.getUser(), _CmdConfiguration.getPassword());
+            }
 		} catch (KeyManagementException | NoSuchAlgorithmException | WsException e) {
 		    throw new Exception(e);
 		}

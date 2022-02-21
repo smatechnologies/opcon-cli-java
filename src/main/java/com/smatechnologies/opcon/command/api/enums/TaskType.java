@@ -6,6 +6,7 @@ public enum TaskType {
 	Dependency,
 	ExpEval,
 	GetJobLog,
+	GetJobStatus,
 	JobAction,
 	JobAdd,
 	MachAction,
@@ -15,9 +16,14 @@ public enum TaskType {
 	MachUpdate,
 	PropExp,
 	PropUpdate,
+	ResourceGet,
+	ResourceCreate,
+	ResourceUpdate,
 	SchedAction,
 	SchedBuild,
 	SchedRebuild,
+	ThreshGet,
+	ThreshCreate,
 	ThreshUpdate,
 	Version
 

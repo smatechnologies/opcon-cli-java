@@ -58,7 +58,7 @@ public class DependencyImpl implements IDependency {
 			OpConCliArguments _OpConCliArguments
 			) throws Exception {
 		
-		Integer success = 1;
+		Integer success = _OpConCliArguments.getErrorCode();
 		Version version = opconApi.getVersion();
 		boolean versionOK = _Utilities.versionCheck(version.getOpConRestApiProductVersion(), _OpConCliArguments.getTask());
 		if(versionOK) {
@@ -81,7 +81,11 @@ public class DependencyImpl implements IDependency {
 					// set NULL job to 0
 					success = 0;
 				} else {
-					success = Integer.parseInt(jobMonitorData.getTerminationCode());
+					String tcode = jobMonitorData.getTerminationCode();
+					if(tcode.startsWith("CC=")) {
+						tcode = tcode.replace("CC=", "");
+					}
+					success = Integer.parseInt(tcode);
 				}
 				if((!(jobMonitorData.getType() == -1)) &&
 						(!(jobMonitorData.getType() == 15))) {
@@ -109,7 +113,7 @@ public class DependencyImpl implements IDependency {
 				LOG.error(MessageFormat.format(DisplayJobNameArgumentMsg, _OpConCliArguments.getJobName()));
 			}
 		} else {
-			success = 1;
+			success = _OpConCliArguments.getErrorCode();
 			LOG.error(MessageFormat.format(InvalidOpConAPI1710VersionMsg, version.getOpConRestApiProductVersion()));
 		}
 		return success;

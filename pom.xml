@@ -4,7 +4,7 @@
 
   <groupId>com.smatechnologies</groupId>
   <artifactId>opcon.command.api</artifactId>
-  <version>1.2.0</version>
+  <version>1.4.0</version>
   <packaging>jar</packaging>
 
   <name>opcon.command.api</name>
@@ -16,8 +16,9 @@
     <jaxb.api.version>2.3.0</jaxb.api.version>
     <jcommander.version>1.72</jcommander.version>
     <java.version>11</java.version>
-    <opcon.rest.api.version>1.0.5</opcon.rest.api.version>
-	<release.dir>${project.basedir}/opcon-cli-dist</release.dir>
+    <opcon.rest.api.version>1.0.7</opcon.rest.api.version>
+    <sma.opcon-commons.version>1.0.1</sma.opcon-commons.version>
+    <release.dir>${project.basedir}/opcon-cli-dist</release.dir>
   </properties>
 
   <repositories>
@@ -54,6 +55,12 @@
     	<artifactId>opcon-rest-api-client</artifactId>
     	<version>${opcon.rest.api.version}</version>
 	</dependency>
+    <!-- SMA Commons Library -->
+    <dependency>
+        <groupId>com.smatechnologies</groupId>
+        <artifactId>opcon-commons</artifactId>
+        <version>${sma.opcon-commons.version}</version>
+    </dependency>
     <dependency>
     	<groupId>org.glassfish.jersey.core</groupId>
         <artifactId>jersey-client</artifactId>
@@ -198,6 +205,42 @@
              				<jar>${project.build.directory}/${project.artifactId}.jar</jar> 
 		        		<classPath>
 		          			<mainClass>com.smatechnologies.opcon.command.api.EncryptValue</mainClass>
+		        		</classPath>
+		        		<jre>
+		          			<path>./java</path>
+		        		</jre>
+           			</configuration>
+   	    		</execution>
+   	    		<execution>
+           			<id>l4j-InsertOmgJob</id>
+           			<phase>package</phase>
+           			<goals>
+             				<goal>launch4j</goal>
+           			</goals>
+           			<configuration>
+             				<headerType>console</headerType>
+             				<outfile>${release.dir}/InsertOmgJob.exe</outfile>
+             				<jar>${project.build.directory}/${project.artifactId}.jar</jar> 
+		        		<classPath>
+		          			<mainClass>com.smatechnologies.opcon.command.api.utils.InsertOmgJob</mainClass>
+		        		</classPath>
+		        		<jre>
+		          			<path>./java</path>
+		        		</jre>
+           			</configuration>
+   	    		</execution>
+   	    		<execution>
+           			<id>l4j-CancelJobs</id>
+           			<phase>package</phase>
+           			<goals>
+             				<goal>launch4j</goal>
+           			</goals>
+           			<configuration>
+             				<headerType>console</headerType>
+             				<outfile>${release.dir}/CancelJobs.exe</outfile>
+             				<jar>${project.build.directory}/${project.artifactId}.jar</jar> 
+		        		<classPath>
+		          			<mainClass>com.smatechnologies.opcon.command.api.utils.CancelJobs</mainClass>
 		        		</classPath>
 		        		<jre>
 		          			<path>./java</path>

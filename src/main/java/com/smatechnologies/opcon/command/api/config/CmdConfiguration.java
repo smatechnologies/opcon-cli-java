@@ -1,5 +1,7 @@
 package com.smatechnologies.opcon.command.api.config;
 
+import com.smatechnologies.opcon.command.api.interfaces.ICmdConstants;
+
 public class CmdConfiguration {
 
 	private static CmdConfiguration _CmdConfiguration = null;
@@ -9,6 +11,7 @@ public class CmdConfiguration {
 	private boolean usingTls = true;
 	private String user = null;
 	private String password = null;
+	private String token = ICmdConstants.EMPTY_STRING;
 	
 	private boolean debug = false;
 
@@ -60,6 +63,14 @@ public class CmdConfiguration {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 
 	public boolean isDebug() {

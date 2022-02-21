@@ -214,10 +214,14 @@ public class ScheduleImpl implements ISchedule {
 				String[] propertyArray = _Utilities.tokenizeParameters(properties, false, ICmdConstants.COMMA);
 				for(int cntr = 0; cntr < propertyArray.length; cntr++) {
 					String[] propertyDefArray = _Utilities.tokenizeParameters(propertyArray[cntr], false, ICmdConstants.EQUAL);
-					ScheduleBuild.InstanceProperty propertydef = new ScheduleBuild.InstanceProperty();
-					propertydef.setKey(propertyDefArray[0]);
-					propertydef.setValue(propertyDefArray[1]);
-					propertydefs.add(propertydef);
+					if(propertyDefArray.length > 1) {
+						ScheduleBuild.InstanceProperty propertydef = new ScheduleBuild.InstanceProperty();
+						propertydef.setKey(propertyDefArray[0]);
+						propertydef.setValue(propertyDefArray[1]);
+						propertydefs.add(propertydef);
+					} else {
+						LOG.info("Schedule Instance Property (" + propertyArray[cntr] + ") is invalid");
+					}
 				}
 			}
 		} catch (Exception ex) {

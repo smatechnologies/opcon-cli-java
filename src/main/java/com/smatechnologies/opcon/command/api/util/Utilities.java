@@ -47,6 +47,7 @@ public class Utilities {
 			byte[] bencrypted = _Encryption.decodeHexString(password);
 			_CmdConfiguration.setPassword(_Encryption.decode64(bencrypted));
 		}
+		_CmdConfiguration.setToken(iniPrefs.node(system).get(ICmdConstants.OPCON_API_TOKEN, null));
 		String debug = iniPrefs.node(ICmdConstants.GENERAL_HEADER).get(ICmdConstants.GENERAL_DEBUG, null);
 		if(debug.equalsIgnoreCase(ICmdConstants.DEBUG_ON)) {
 			_CmdConfiguration.setDebug(true);
@@ -134,6 +135,12 @@ public class Utilities {
 				}
 				break;
 
+			case GetJobStatus:
+				if(checkNumber >= testNumber171) {
+					versionOK = true;
+				}
+				break;
+
 			case JobAction:
 				if(checkNumber >= testNumber171) {
 					versionOK = true;
@@ -203,6 +210,18 @@ public class Utilities {
 
 			case SchedRebuild:
 				if(checkNumber >= testNumber183) {
+					versionOK = true;
+				}
+				break;
+
+			case ThreshGet:
+				if(checkNumber >= testNumber171) {
+					versionOK = true;
+				}
+				break;
+
+			case ThreshCreate:
+				if(checkNumber >= testNumber171) {
 					versionOK = true;
 				}
 				break;
@@ -343,31 +362,6 @@ public class Utilities {
 		return gcal;
 	} // END : setCalendarDate
 
-//	public PropertyList getPropertyList(
-//			String properties
-//			) throws Exception {
-//		
-//		PropertyList propertyList = new PropertyList();
-//		List<PropertyDefinition> propertydefs = new ArrayList<PropertyDefinition>();
-//		
-//		try {
-//			if(properties != null) {
-//				String[] propertyArray = tokenizeParameters(properties, false, CommandLineConstants.COMMA);
-//				for(int cntr = 0; cntr < propertyArray.length; cntr++) {
-//					String[] propertyDefArray = tokenizeParameters(propertyArray[cntr], false, CommandLineConstants.EQUAL);
-//					PropertyDefinition propertyDefinition = new PropertyDefinition();
-//					propertyDefinition.setName(propertyDefArray[0]);
-//					propertyDefinition.setValue(propertyDefArray[1]);
-//					propertydefs.add(propertyDefinition);
-//				}
-//			}
-//			propertyList.setPropertyList(propertydefs);
-//		} catch (Exception ex) {
-//			throw new Exception(ex);
-//		}
-//		return propertyList;
-//	}	// END : getPropertyList
-//
 	public String[] tokenizeParameters(
 			String parameters, 
 			boolean keepQuote, 
@@ -398,7 +392,6 @@ public class Utilities {
 		}
 		return parameters.split(delimiter);
 	}	// END : tokenizeParameters
-
 	
 	public List<String> extractFields(
 			String inputrec, 

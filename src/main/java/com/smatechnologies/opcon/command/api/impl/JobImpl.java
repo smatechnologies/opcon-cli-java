@@ -585,10 +585,14 @@ public class JobImpl implements IJob {
 				String[] propertyArray = _Utilities.tokenizeParameters(properties, false, ICmdConstants.COMMA);
 				for(int cntr = 0; cntr < propertyArray.length; cntr++) {
 					String[] propertyDefArray = _Utilities.tokenizeParameters(propertyArray[cntr], false, ICmdConstants.EQUAL);
-					ScheduleAction.Schedule.Job.InstanceProperty property = new ScheduleAction.Schedule.Job.InstanceProperty();
-					property.setName(propertyDefArray[0]);
-					property.setValue(propertyDefArray[1]);
-					instancePropertyList.add(property);
+					if(propertyDefArray.length > 1) {
+						ScheduleAction.Schedule.Job.InstanceProperty property = new ScheduleAction.Schedule.Job.InstanceProperty();
+						property.setName(propertyDefArray[0]);
+						property.setValue(propertyDefArray[1]);
+						instancePropertyList.add(property);
+					} else {
+						LOG.info("Schedule Instance Property (" + propertyArray[cntr] + ") is invalid");
+					}
 				}
 			}
 		} catch (Exception ex) {

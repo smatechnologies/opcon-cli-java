@@ -1,10 +1,13 @@
 package com.smatechnologies.opcon.command.api;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.smatechnologies.opcon.command.api.utils.modules.JobInformation;
 import com.smatechnologies.opcon.restapiclient.api.OpconApi;
 import com.smatechnologies.opcon.restapiclient.api.OpconApiProfile;
 import com.smatechnologies.opcon.restapiclient.jackson.DefaultObjectMapperProvider;
@@ -18,13 +21,15 @@ public class TestValidateJsonFile {
 		TestValidateJsonFile _TestValidateJsonFile = new TestValidateJsonFile();
 		DefaultObjectMapperProvider _DefaultObjectMapperProvider = new DefaultObjectMapperProvider();
 		
-		
 		try {
-			String fileName = "C:\\test\\api.cmd\\template\\machine_test.json";
-			Machine[] machines = _DefaultObjectMapperProvider.getObjectMapper().readValue(new FileInputStream(fileName), Machine[].class );
-			List<Machine> machineList = Arrays.asList(machines);
-			for(Machine machine : machineList) {
-				System.out.println("name " + machine.getName());
+			String fileName = "C:\\test\\OMGTest\\Ausgabe_OMG.JSON";
+			File fileStream = new File(fileName, "UTF-8");
+			
+			JobInformation[] infoArray = _DefaultObjectMapperProvider.getObjectMapper().readValue(
+					new InputStreamReader(new FileInputStream(fileName),"UTF8"), JobInformation[].class );
+			List<JobInformation> infoList = Arrays.asList(infoArray);
+			for(JobInformation info : infoList) {
+				System.out.println("jobid " + info.getInternalJobId());
 			}
 		} catch (JsonParseException ex) {
 			System.out.println("json parse error " + ex.getMessage());
