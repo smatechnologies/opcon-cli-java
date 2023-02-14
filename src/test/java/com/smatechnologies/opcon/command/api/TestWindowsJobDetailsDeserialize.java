@@ -24,8 +24,8 @@ public class TestWindowsJobDetailsDeserialize {
 
 	private static IJob _IJob = new JobImpl();
 	
-	private static final String address1 = "https://bvhtest02:9010/api";
-	private static final String jobid1 = "20200324|360|1|BLOBS_LIST";
+	private static final String address1 = "https://DESKTOP-QMQS7D3:443/api";
+	private static final String jobid1 = "20230212|27|1|SUB2";
 	
 	private static final String address2 = "https://34.228.8.114:9010/api";
 	private static final String jobid2 = "20200313|133|1|JOB001";
@@ -72,7 +72,7 @@ public class TestWindowsJobDetailsDeserialize {
 	
 	public static void main(String[] args) {
 		 TestWindowsJobDetailsDeserialize _client = new  TestWindowsJobDetailsDeserialize();
-		OpconApiProfile profile = new OpconApiProfile(address3);
+		OpconApiProfile profile = new OpconApiProfile(address1);
 		DefaultObjectMapperProvider _DefaultObjectMapperProvider = new DefaultObjectMapperProvider();
 		
 		
@@ -80,7 +80,7 @@ public class TestWindowsJobDetailsDeserialize {
 			OpconApi opconApi = _client.getClient(profile);
 			Version version = opconApi.getVersion();
 			System.out.println("version " + version.getOpConRestApiProductVersion());
-			String id = jobid3;
+			String id = jobid1;
 			DailyJob job = _IJob.getDailyJobById(opconApi, id);
 			String jsondata = _DefaultObjectMapperProvider.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(job);
 			System.out.println("daily Job (" + jsondata);

@@ -40,7 +40,7 @@ public interface ICmdConstants {
 	public static final String TRUE = "True";
 	
 	// general
-	public static final String SOFTWARE_VERSION = "1.4.0";
+	public static final String SOFTWARE_VERSION = "21.0.1";
 	public static final String SYSTEM_USER_DIRECTORY = "user.dir";
 	public static final String CONFIG_FILE_NAME = "Connector.config";
 	public static final String LOG_DATE_TIME_FORMAT = "yyyyMMdd HH:mm:ss";

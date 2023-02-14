@@ -70,12 +70,13 @@ public class DependencyImpl implements IDependency {
 				checkIfJobDependencyFinished(opconApi, dailyJob.getId());
 				if(jobMonitorData.getType() == 6) {		// UNIX
 					// strip off leading + and only use values up to semi colon (:)
+					LOG.debug("UNIX termination code {" + jobMonitorData.getTerminationCode() + "}");
 					String uCode = jobMonitorData.getTerminationCode();
 					int firstColon = uCode.indexOf(ICmdConstants.COLON);
 					if(firstColon > -1) {
 						uCode = uCode.substring(0, firstColon);
 					}
-					uCode = uCode.replaceAll(ICmdConstants.PLUS, ICmdConstants.EMPTY_STRING);
+					uCode = uCode.replace(ICmdConstants.PLUS, ICmdConstants.EMPTY_STRING);
 					success = Integer.parseInt(uCode);
 				} else if(jobMonitorData.getType() == -1) {		// NULL
 					// set NULL job to 0
@@ -89,7 +90,6 @@ public class DependencyImpl implements IDependency {
 				}
 				if((!(jobMonitorData.getType() == -1)) &&
 						(!(jobMonitorData.getType() == 15))) {
-					System.out.println("dailyjob id (" + dailyJob.getId() + ")");
 					List<JobLogData> jobLogDataList = _IJob.getJobLogByDailyJob(opconApi, jobMonitorData.getDailyJob());
 					LOG.info(SeperatorLineMsg);
 					LOG.info(JobLogHeaderMsg);
@@ -98,7 +98,6 @@ public class DependencyImpl implements IDependency {
 						for(String record : jobLogData.getRecords()) {
 							LOG.info(MessageFormat.format(JobLogLineMsg, record));
 						}
-		
 					}
 				}
 				LOG.info(MessageFormat.format(MonitorCompletedMsg, _OpConCliArguments.getJobName(), _OpConCliArguments.getScheduleName(), 

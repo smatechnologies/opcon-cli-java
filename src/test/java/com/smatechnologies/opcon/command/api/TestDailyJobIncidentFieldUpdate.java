@@ -26,10 +26,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smatechnologies.opcon.command.api.arguments.OpConCliArguments;
 import com.smatechnologies.opcon.command.api.config.CmdConfiguration;
-import com.smatechnologies.opcon.command.api.impl.OpConCliImpl;
 import com.smatechnologies.opcon.command.api.impl.JobImpl;
 import com.smatechnologies.opcon.command.api.interfaces.ICmdConstants;
-import com.smatechnologies.opcon.command.api.interfaces.IOpConCli;
 import com.smatechnologies.opcon.command.api.interfaces.IJob;
 import com.smatechnologies.opcon.command.api.util.Utilities;
 import com.smatechnologies.opcon.command.api.ws.WsLogger;
@@ -39,32 +37,34 @@ import com.smatechnologies.opcon.restapiclient.api.OpconApi;
 import com.smatechnologies.opcon.restapiclient.api.OpconApiProfile;
 import com.smatechnologies.opcon.restapiclient.api.dailyjobs.DailyJobsCriteria;
 import com.smatechnologies.opcon.restapiclient.api.dailyjobs.WsDailyJobs;
+// import com.smatechnologies.opcon.restapiclient.api.dailyjobs.incidentTickets.WsDailyJobsIncidentTickets;
 import com.smatechnologies.opcon.restapiclient.api.dailyschedules.DailySchedulesCriteria;
 import com.smatechnologies.opcon.restapiclient.api.dailyschedules.WsDailySchedules;
 import com.smatechnologies.opcon.restapiclient.jackson.DefaultObjectMapperProvider;
-import com.smatechnologies.opcon.restapiclient.model.BatchUser;
 import com.smatechnologies.opcon.restapiclient.model.DailySchedule;
 import com.smatechnologies.opcon.restapiclient.model.JobType;
+import com.smatechnologies.opcon.restapiclient.model.Version;
 import com.smatechnologies.opcon.restapiclient.model.dailyjob.DailyJob;
+import com.smatechnologies.opcon.restapiclient.model.dailyjob.DailyJob.Documentation;
+// import com.smatechnologies.opcon.restapiclient.model.dailyjob.IncidentTicketDailyJob;
 import com.smatechnologies.opcon.restapiclient.model.dailyjob.WindowsDailyJob;
 import com.smatechnologies.opcon.restapiclient.model.dailyjob.details.WindowsDetails;
 import com.smatechnologies.opcon.restapiclient.model.dailyjob.details.commons.BasicFailureCriteria;
 import com.smatechnologies.opcon.restapiclient.model.dailyjob.details.commons.BasicFailureCriteria.Operator;
-import com.smatechnologies.opcon.restapiclient.model.machine.Machine;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.util.StatusPrinter;
 
-public class TestDailyJobUpdate {
+public class TestDailyJobIncidentFieldUpdate {
 
 	private static final String UrlFormatTls = "https://{0}:{1}/api";
-	private static final String JobId = "20220519|132|1|DUMMY";
+	private static final String JobId = "20201109|16|1|JOB001";
 	private static DateTimeFormatter localDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	
-	private final static Logger LOG = LoggerFactory.getLogger(TestDailyJobUpdate.class);
+	private final static Logger LOG = LoggerFactory.getLogger(TestDailyJobIncidentFieldUpdate.class);
 	private static CmdConfiguration _CmdConfiguration = CmdConfiguration.getInstance();
 	private static final IJob _IJob = new JobImpl();
 
@@ -147,12 +147,52 @@ public class TestDailyJobUpdate {
 		return dailyJob;
 	}
 
-	private WindowsDailyJob getWindowsDailyJob(
+//	private IncidentTicketDailyJob getIncidentInformation(
+//			OpconApi opconApi,
+//			String uid
+//			) throws Exception {
+//
+//		WsDailyJobs wsDailyJobs = opconApi.dailyJobs();
+//		IncidentTicketDailyJob details = null;
+//		
+//		WsDailyJobsIncidentTickets wsDailyJobsIncidentTickets = wsDailyJobs.incidentTickets(uid);
+//		List<IncidentTicketDailyJob> tickets = wsDailyJobsIncidentTickets.get();
+//		if(!tickets.isEmpty()) {
+//			details = tickets.get(0);
+//		}
+//		return details;
+//	}	// END : getIncidentInformation
+//
+//	private IncidentTicketDailyJob updateIncidentInformation(
+//			OpconApi opconApi,
+//			String uid,
+//			IncidentTicketDailyJob incidentTicketDetails
+//			) throws Exception {
+//
+//		WsDailyJobs wsDailyJobs = opconApi.dailyJobs();
+//
+//		WsDailyJobsIncidentTickets wsDailyJobsIncidentTickets = wsDailyJobs.incidentTickets(uid);
+//		return wsDailyJobsIncidentTickets.put(incidentTicketDetails);
+//	}	// END : getIncidentInformation
+//
+//	private IncidentTicketDailyJob insertIncidentInformation(
+//			OpconApi opconApi,
+//			String uid,
+//			IncidentTicketDailyJob incidentTicketDetails
+//			) throws Exception {
+//
+//		WsDailyJobs wsDailyJobs = opconApi.dailyJobs();
+//
+//		WsDailyJobsIncidentTickets wsDailyJobsIncidentTickets = wsDailyJobs.incidentTickets(uid);
+//		return wsDailyJobsIncidentTickets.post(incidentTicketDetails);
+//	}	// END : getIncidentInformation
+
+	private DailyJob getDailyJob(
 			OpconApi opconApi,
 			OpConCliArguments _CmdLineArguments
 			) throws Exception {
 
-		WindowsDailyJob windowsDailyJob = null;
+		DailyJob dailyJob = null;
 		
 		// check if schedule exists in the daily
 		DailySchedule dailySchedule = checkIfDailyScheduleExists(opconApi, _CmdLineArguments);
@@ -166,26 +206,23 @@ public class TestDailyJobUpdate {
 		    criteria.setName(_CmdLineArguments.getJobName());
 			criteria.setDates(ldates);
 			criteria.setScheduleIds(scheduleIds);
-			criteria.setJobType(JobType.WINDOWS.getDescription());
 			criteria.setIncludeDetails(true);
 			WsDailyJobs wsDailyJobs = opconApi.dailyJobs();
-			List<WindowsDailyJob> dailyJobs = wsDailyJobs.get(criteria).stream()
-					.filter(dailyJob -> dailyJob instanceof WindowsDailyJob)
-					.map(dailyJob -> (WindowsDailyJob) dailyJob)
-					.collect(Collectors.toList());
+			List<DailyJob> dailyJobs = wsDailyJobs.get(criteria);
 			if(dailyJobs.size() > 0) {
-				windowsDailyJob = dailyJobs.get(0);
+				dailyJob = dailyJobs.get(0);
 			}
 		} else {
 			LOG.error("Schedule not found in Daily");
 			return null;
 		}
-		return windowsDailyJob;
-	}	// END : getWindowsDailyJob
+		return dailyJob;
+	}	// END : getDailyJob
 
+	
 	private DailyJob putDailyJob(
 			OpconApi opconApi,
-			WindowsDailyJob dailyJob
+			DailyJob dailyJob
 			) throws Exception {
 		
 		WsDailyJobs wsDailyJobs = opconApi.dailyJobs();
@@ -212,9 +249,30 @@ public class TestDailyJobUpdate {
 		} 
 		return dailySchedule;
 	}	// END : checkIfDailyScheduleExists
-
+	
+	private String isOpConApiVersion20orGreater(
+			OpconApi opconApi
+			) throws Exception {
+	
+		Version version = opconApi.getVersion();
+		
+		// convert version to integer value for check
+		int lastPeriod = version.getOpConRestApiProductVersion().lastIndexOf(ICmdConstants.PERIOD);
+		String apiVersion = version.getOpConRestApiProductVersion().substring(0,lastPeriod);
+		apiVersion = apiVersion.replaceAll("\\.", ICmdConstants.EMPTY_STRING);
+		apiVersion = apiVersion + "0000";
+		apiVersion = apiVersion.substring(0,4);
+		int checkNumber = Integer.parseInt(apiVersion);
+		System.out.println("ver (" + String.valueOf(checkNumber) + ")");
+		if(checkNumber < 2001) {
+			return version.getOpConRestApiProductVersion();
+		} else {
+			return null;
+		}
+	}	// END : isOpConApiVersion20orGreater
+	
 	public static void main(String[] args) {
-		TestDailyJobUpdate _TestDailyJobUpdate = new TestDailyJobUpdate();
+		TestDailyJobIncidentFieldUpdate _TestDailyJobIncidentFieldUpdate = new TestDailyJobIncidentFieldUpdate();
 		OpConCliArguments _CmdLineArguments = new OpConCliArguments();
 		JCommander jcCmdLineArguments = null;
 		DefaultObjectMapperProvider _DefaultObjectMapperProvider = new DefaultObjectMapperProvider();
@@ -240,22 +298,44 @@ public class TestDailyJobUpdate {
 			// set general values
 			iniPrefs = new IniPreferences(new Ini(new File(configFileName)));
 			_CmdConfiguration = _Utilities.setConfigurationValues(iniPrefs, _CmdConfiguration, _CmdLineArguments.getOpConSystem());
-			_TestDailyJobUpdate.setLogger(_CmdConfiguration.isDebug());
+			_TestDailyJobIncidentFieldUpdate.setLogger(_CmdConfiguration.isDebug());
 			String url = MessageFormat.format(UrlFormatTls, _CmdConfiguration.getServer(), String.valueOf(_CmdConfiguration.getPort()));
 			OpconApiProfile profile = new OpconApiProfile(url);
-			OpconApi opconApi = _TestDailyJobUpdate.getClient(profile);
-			WindowsDailyJob testJob = _TestDailyJobUpdate.getWindowsDailyJob(opconApi, _CmdLineArguments);
-			testJob.getDetails().setCommandLine("genericp.exe -t 20");
-			testJob.getDetails().setJobPriority(WindowsDetails.Priority.HIGH);
-			List<BasicFailureCriteria> failures = new ArrayList<BasicFailureCriteria>();
-			BasicFailureCriteria basicFailureCriteria = new BasicFailureCriteria();
-			basicFailureCriteria.setOperator(Operator.NOT_EQUAL);
-			basicFailureCriteria.setExitCode(0);
-			failures.add(basicFailureCriteria);
-			testJob.getDetails().setBasicFailureCriteria(failures);
-			DailyJob updated = _TestDailyJobUpdate.putDailyJob(opconApi, testJob);
-			// if date present check the format
-			WindowsDailyJob testJobupdated = _TestDailyJobUpdate.getWindowsDailyJob(opconApi, _CmdLineArguments);
+			OpconApi opconApi = _TestDailyJobIncidentFieldUpdate.getClient(profile);
+			String currentVersion = _TestDailyJobIncidentFieldUpdate.isOpConApiVersion20orGreater(opconApi);
+//			DailyJob testJob = _TestDailyJobIncidentFieldUpdate.getDailyJob(opconApi, _CmdLineArguments);
+//			LOG.info("UniqueJobId {" + testJob.getUniqueJobId() + "}");
+//			LOG.info("Uid {" + testJob.getUid() + "}");
+////			IncidentTicketDetails details = _TestDailyJobIncidentFieldUpdate.getIncidentInformation(opconApi, String.valueOf(testJob.getUid()));
+////			LOG.info("Incident id {" + details.getId() + "} number {" + details.getTicketId() + "}");
+//			IncidentTicketDailyJob details = new IncidentTicketDailyJob();
+//			details.setTicketId("INC9012345");
+//			details.setTicketUrl("ticketurl");
+//			IncidentTicketDailyJob udetails = _TestDailyJobIncidentFieldUpdate.insertIncidentInformation(opconApi, String.valueOf(testJob.getUid()), details);
+//			
+//			//			
+//			
+//			
+//			
+//			
+//			
+//			
+//			DailyJob testJob = _TestDailyJobIncidentFieldUpdate.getDailyJobById(opconApi, JobId);
+//			Documentation doc = testJob.getDocumentation();
+//			if(doc.getJob() == null) {
+//				System.out.println("doc (" + doc.getJob() + ")");
+//				doc.setJob("existing ticket INC0000566");
+//				testJob.setDocumentation(doc);
+//			} else {
+//				String existing = doc.getJob();
+//				existing = existing + " existing ticket INC0000566";
+//				doc.setJob(existing);
+//				testJob.setDocumentation(doc);
+//			}
+//			
+//			LOG.info("Got Daily Job {" + testJob.getName() + "}");
+//			testJob.setIncidentTicketId("INC0000566");
+//			DailyJob updated = _TestDailyJobIncidentFieldUpdate.putDailyJob(opconApi, testJob);
 			completionCode = 0;
 			
 		} catch (com.beust.jcommander.ParameterException pe) {
@@ -267,5 +347,6 @@ public class TestDailyJobUpdate {
 		}
 		System.exit(completionCode);
 	} // END : main
+
 
 }

@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.ext.ContextResolver;
@@ -26,10 +25,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smatechnologies.opcon.command.api.arguments.OpConCliArguments;
 import com.smatechnologies.opcon.command.api.config.CmdConfiguration;
-import com.smatechnologies.opcon.command.api.impl.OpConCliImpl;
 import com.smatechnologies.opcon.command.api.impl.JobImpl;
 import com.smatechnologies.opcon.command.api.interfaces.ICmdConstants;
-import com.smatechnologies.opcon.command.api.interfaces.IOpConCli;
 import com.smatechnologies.opcon.command.api.interfaces.IJob;
 import com.smatechnologies.opcon.command.api.util.Utilities;
 import com.smatechnologies.opcon.command.api.ws.WsLogger;
@@ -41,32 +38,36 @@ import com.smatechnologies.opcon.restapiclient.api.dailyjobs.DailyJobsCriteria;
 import com.smatechnologies.opcon.restapiclient.api.dailyjobs.WsDailyJobs;
 import com.smatechnologies.opcon.restapiclient.api.dailyschedules.DailySchedulesCriteria;
 import com.smatechnologies.opcon.restapiclient.api.dailyschedules.WsDailySchedules;
+import com.smatechnologies.opcon.restapiclient.api.dailyschedules.properties.WsDailySchedulesProperties;
+import com.smatechnologies.opcon.restapiclient.api.globalproperties.GlobalPropertiesCriteria;
+import com.smatechnologies.opcon.restapiclient.api.globalproperties.WsGlobalProperties;
 import com.smatechnologies.opcon.restapiclient.jackson.DefaultObjectMapperProvider;
-import com.smatechnologies.opcon.restapiclient.model.BatchUser;
 import com.smatechnologies.opcon.restapiclient.model.DailySchedule;
-import com.smatechnologies.opcon.restapiclient.model.JobType;
+import com.smatechnologies.opcon.restapiclient.model.GlobalProperty;
+import com.smatechnologies.opcon.restapiclient.model.Property;
 import com.smatechnologies.opcon.restapiclient.model.dailyjob.DailyJob;
-import com.smatechnologies.opcon.restapiclient.model.dailyjob.WindowsDailyJob;
-import com.smatechnologies.opcon.restapiclient.model.dailyjob.details.WindowsDetails;
-import com.smatechnologies.opcon.restapiclient.model.dailyjob.details.commons.BasicFailureCriteria;
-import com.smatechnologies.opcon.restapiclient.model.dailyjob.details.commons.BasicFailureCriteria.Operator;
-import com.smatechnologies.opcon.restapiclient.model.machine.Machine;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.util.StatusPrinter;
 
-public class TestDailyJobUpdate {
+public class TestGlobalProperties {
 
 	private static final String UrlFormatTls = "https://{0}:{1}/api";
-	private static final String JobId = "20220519|132|1|DUMMY";
+	private static final String JobId = "20200922|10|1|WIN001_TEST";
 	private static DateTimeFormatter localDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-	
-	private final static Logger LOG = LoggerFactory.getLogger(TestDailyJobUpdate.class);
+	private final static Logger LOG = LoggerFactory.getLogger(TestGlobalProperties.class);
 	private static CmdConfiguration _CmdConfiguration = CmdConfiguration.getInstance();
 	private static final IJob _IJob = new JobImpl();
+	private static DefaultObjectMapperProvider _DefaultObjectMapperProvider = new DefaultObjectMapperProvider();
+	private static Utilities _Utilities = new Utilities();
+	
+	private static final String OpConInstance = "OI.";
+	private static final String ScheduleInstance = "SI.";
+	private static final String JobInstance = "JI.";
+	
 
 	private void setLogger(
 			boolean isDebug
@@ -135,86 +136,103 @@ public class TestDailyJobUpdate {
 		return opconApi;
 	}	// END : getClient
 	
-	private DailyJob getDailyJobById(
+//	private List<Property> getDailyScheduleProperties(
+//			OpconApi opconApi,
+//			String scheduleId
+//			) throws Exception {
+//
+//		List<Property> properties = null;
+//		
+//		WsDailySchedules wsDailySchedules = opconApi.dailySchedules();
+//		WsDailySchedulesProperties wsDailySchedulesProperties = wsDailySchedules.properties(scheduleId);
+//		properties = wsDailySchedulesProperties.get();
+//		return properties;
+//	}	// END : getWindowsDailyJob
+//
+//	private Property getDailySchedulePropertyByName(
+//			OpconApi opconApi,
+//			String scheduleId,
+//			String name
+//			) throws Exception {
+//
+//		Property property = null;
+//		
+//		WsDailySchedules wsDailySchedules = opconApi.dailySchedules();
+//		WsDailySchedulesProperties wsDailySchedulesProperties = wsDailySchedules.properties(scheduleId);
+//		property = wsDailySchedulesProperties.get(name);
+//		return property;
+//	}	// END : getWindowsDailyJob
+
+	private Property getPropertyByName(
 			OpconApi opconApi,
-			String jobid
-			) throws Exception {
-		
-		DailyJob dailyJob = null;
-
-		WsDailyJobs wsDailyJobs = opconApi.dailyJobs();
-		dailyJob = wsDailyJobs.get(jobid);
-		return dailyJob;
-	}
-
-	private WindowsDailyJob getWindowsDailyJob(
-			OpconApi opconApi,
-			OpConCliArguments _CmdLineArguments
+			String name
 			) throws Exception {
 
-		WindowsDailyJob windowsDailyJob = null;
+		Property property = null;
 		
-		// check if schedule exists in the daily
-		DailySchedule dailySchedule = checkIfDailyScheduleExists(opconApi, _CmdLineArguments);
-		if(dailySchedule != null) {
-			Collection<String> scheduleIds = new ArrayList<String>();
-			scheduleIds.add(dailySchedule.getId());
-			Collection<LocalDate> ldates = new ArrayList<LocalDate>();
-		    LocalDate dateTime = LocalDate.parse(_CmdLineArguments.getTaskDate(), localDateFormatter);
-		    ldates.add(dateTime);
-			DailyJobsCriteria criteria = new DailyJobsCriteria();
-		    criteria.setName(_CmdLineArguments.getJobName());
-			criteria.setDates(ldates);
-			criteria.setScheduleIds(scheduleIds);
-			criteria.setJobType(JobType.WINDOWS.getDescription());
-			criteria.setIncludeDetails(true);
-			WsDailyJobs wsDailyJobs = opconApi.dailyJobs();
-			List<WindowsDailyJob> dailyJobs = wsDailyJobs.get(criteria).stream()
-					.filter(dailyJob -> dailyJob instanceof WindowsDailyJob)
-					.map(dailyJob -> (WindowsDailyJob) dailyJob)
-					.collect(Collectors.toList());
-			if(dailyJobs.size() > 0) {
-				windowsDailyJob = dailyJobs.get(0);
-			}
+		// Opcon Global Property
+		name = name.replace(OpConInstance, ICmdConstants.EMPTY_STRING);
+		LOG.info("Property name (" + name + ")");
+		GlobalPropertiesCriteria criteria = new GlobalPropertiesCriteria();
+		criteria.setName(name);
+		WsGlobalProperties wsProperties = opconApi.globalProperties();
+		List<GlobalProperty> properties = wsProperties.get(criteria);
+		if(properties.size() > 0) {
+			GlobalProperty gproperty = properties.get(0);
+			String jsondata = _DefaultObjectMapperProvider.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(gproperty);
+			LOG.debug("property (" + jsondata + ")");
+			property = new Property();
+			property.setKey(gproperty.getName());
+			property.setValue(gproperty.getValue());
 		} else {
-			LOG.error("Schedule not found in Daily");
-			return null;
+			LOG.error("Property name (" + name + ") not found");
 		}
-		return windowsDailyJob;
-	}	// END : getWindowsDailyJob
+		return property;
+	}	// END : getPropertyBy Name	
+	
+//		private DailySchedule getDailySchedule(
+//				OpconApi opconApi,
+//				Collection<LocalDate> ldates,
+//				String sname
+//				) throws Exception {
+//			
+//			DailySchedule dailySchedule = null;
+//			DailySchedulesCriteria criteria = new DailySchedulesCriteria();
+//			
+//		    criteria.setName(sname);
+//			criteria.setDates(ldates);
+//			WsDailySchedules wsDailySchedules = opconApi.dailySchedules();
+//			List<DailySchedule> schedules = wsDailySchedules.get(criteria);
+//			if(schedules.size() > 0) {
+//				dailySchedule = schedules.get(0);
+//			} 
+//			return dailySchedule;
+//		}	// END : checkIfDailyScheduleExists
+	
 
-	private DailyJob putDailyJob(
-			OpconApi opconApi,
-			WindowsDailyJob dailyJob
-			) throws Exception {
-		
-		WsDailyJobs wsDailyJobs = opconApi.dailyJobs();
-		return wsDailyJobs.put(dailyJob);
-	}
-
-	private DailySchedule checkIfDailyScheduleExists(
-			OpconApi opconApi,
-			OpConCliArguments _CmdLineArguments
-			) throws Exception {
-		
-		DailySchedule dailySchedule = null;
-		DailySchedulesCriteria criteria = new DailySchedulesCriteria();
-		
-		Collection<LocalDate> ldates = new ArrayList<LocalDate>();
-	    LocalDate dateTime = LocalDate.parse(_CmdLineArguments.getTaskDate(), localDateFormatter);
-	    ldates.add(dateTime);
-	    criteria.setName(_CmdLineArguments.getScheduleName());
-		criteria.setDates(ldates);
-		WsDailySchedules wsDailySchedules = opconApi.dailySchedules();
-		List<DailySchedule> schedules = wsDailySchedules.get(criteria);
-		if(schedules.size() > 0) {
-			dailySchedule = schedules.get(0);
-		} 
-		return dailySchedule;
-	}	// END : checkIfDailyScheduleExists
-
+//	private DailySchedule getDailySchedule(
+//			OpconApi opconApi,
+//			OpConCliArguments _CmdLineArguments
+//			) throws Exception {
+//		
+//		DailySchedule dailySchedule = null;
+//		DailySchedulesCriteria criteria = new DailySchedulesCriteria();
+//		
+//		Collection<LocalDate> ldates = new ArrayList<LocalDate>();
+//	    LocalDate dateTime = LocalDate.parse(_CmdLineArguments.getTaskDate(), localDateFormatter);
+//	    ldates.add(dateTime);
+//	    criteria.setName(_CmdLineArguments.getScheduleName());
+//		criteria.setDates(ldates);
+//		WsDailySchedules wsDailySchedules = opconApi.dailySchedules();
+//		List<DailySchedule> schedules = wsDailySchedules.get(criteria);
+//		if(schedules.size() > 0) {
+//			dailySchedule = schedules.get(0);
+//		} 
+//		return dailySchedule;
+//	}	// END : checkIfDailyScheduleExists
+	
 	public static void main(String[] args) {
-		TestDailyJobUpdate _TestDailyJobUpdate = new TestDailyJobUpdate();
+		TestGlobalProperties _TestGlobalProperties = new TestGlobalProperties();
 		OpConCliArguments _CmdLineArguments = new OpConCliArguments();
 		JCommander jcCmdLineArguments = null;
 		DefaultObjectMapperProvider _DefaultObjectMapperProvider = new DefaultObjectMapperProvider();
@@ -240,24 +258,12 @@ public class TestDailyJobUpdate {
 			// set general values
 			iniPrefs = new IniPreferences(new Ini(new File(configFileName)));
 			_CmdConfiguration = _Utilities.setConfigurationValues(iniPrefs, _CmdConfiguration, _CmdLineArguments.getOpConSystem());
-			_TestDailyJobUpdate.setLogger(_CmdConfiguration.isDebug());
+			_TestGlobalProperties.setLogger(_CmdConfiguration.isDebug());
 			String url = MessageFormat.format(UrlFormatTls, _CmdConfiguration.getServer(), String.valueOf(_CmdConfiguration.getPort()));
 			OpconApiProfile profile = new OpconApiProfile(url);
-			OpconApi opconApi = _TestDailyJobUpdate.getClient(profile);
-			WindowsDailyJob testJob = _TestDailyJobUpdate.getWindowsDailyJob(opconApi, _CmdLineArguments);
-			testJob.getDetails().setCommandLine("genericp.exe -t 20");
-			testJob.getDetails().setJobPriority(WindowsDetails.Priority.HIGH);
-			List<BasicFailureCriteria> failures = new ArrayList<BasicFailureCriteria>();
-			BasicFailureCriteria basicFailureCriteria = new BasicFailureCriteria();
-			basicFailureCriteria.setOperator(Operator.NOT_EQUAL);
-			basicFailureCriteria.setExitCode(0);
-			failures.add(basicFailureCriteria);
-			testJob.getDetails().setBasicFailureCriteria(failures);
-			DailyJob updated = _TestDailyJobUpdate.putDailyJob(opconApi, testJob);
-			// if date present check the format
-			WindowsDailyJob testJobupdated = _TestDailyJobUpdate.getWindowsDailyJob(opconApi, _CmdLineArguments);
-			completionCode = 0;
-			
+			OpconApi opconApi = _TestGlobalProperties.getClient(profile);
+			Property property = _TestGlobalProperties.getPropertyByName(opconApi, "UNIXLSAMPath");
+			LOG.info("property name (" + property.getKey() + ") value (" + property.getValue() + ")");
 		} catch (com.beust.jcommander.ParameterException pe) {
 			jcCmdLineArguments.usage();
 			System.exit(1);
@@ -265,7 +271,9 @@ public class TestDailyJobUpdate {
 			LOG.error(_Utilities.getExceptionDetails(ex));
 			System.exit(1);
 		}
-		System.exit(completionCode);
+		System.exit(0);
 	} // END : main
 
+
 }
+

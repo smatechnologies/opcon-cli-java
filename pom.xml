@@ -4,7 +4,7 @@
 
   <groupId>com.smatechnologies</groupId>
   <artifactId>opcon.command.api</artifactId>
-  <version>1.4.0</version>
+  <version>21.0.1</version>
   <packaging>jar</packaging>
 
   <name>opcon.command.api</name>
@@ -16,7 +16,7 @@
     <jaxb.api.version>2.3.0</jaxb.api.version>
     <jcommander.version>1.72</jcommander.version>
     <java.version>11</java.version>
-    <opcon.rest.api.version>1.0.7</opcon.rest.api.version>
+    <opcon.rest.api.version>21.0.1</opcon.rest.api.version>
     <sma.opcon-commons.version>1.0.1</sma.opcon-commons.version>
     <release.dir>${project.basedir}/opcon-cli-dist</release.dir>
   </properties>
