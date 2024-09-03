@@ -111,13 +111,13 @@ jobs:
     
     steps:
       - name: Download Windows Package
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: OpConCLI_Windows.zip
           path: ./
 
       - name: Download Linux Package
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: OpConCLI_Linux.tar.gz
           path: ./
