@@ -39,6 +39,8 @@ public class OpConCliArguments {
 	public static final String ScheduleRebuildIndicatorsArgumentDescriptionMsg = "(Optional) Optional for SchedRebuild - An indicator used to determine if a schedule should be rebuilt - checks if the schedule name starts with this value";
 	public static final String DefaultErrorCodeArgumentDescriptionMsg = "The error code returned when an error occurs in the opconCli (default -1)";
 	public static final String JobLogFileNameArgumentDescriptionMsg = "(Optional) Defines a filename that the returned joblog must be written into (JobLog)";
+	public static final String RemoteDependencyJobLogArgumentDescriptionMsg = "(Optional) Defines if the joblog should be retrieved after dependency check completed (Dependency)";
+	
 
 	@Parameter(names="-ap", description = ApplicationNameArgumentDescriptionMsg)
 	private String applicationName = null;
@@ -138,7 +140,10 @@ public class OpConCliArguments {
 	
 	@Parameter(names="-sri", description = ScheduleRebuildIndicatorsArgumentDescriptionMsg)
 	private String scheduleRebuildIndicator = null;
-
+	
+	@Parameter(names="-rlf", description = RemoteDependencyJobLogArgumentDescriptionMsg)
+	private boolean retrieveLogFiles = false;
+	
 	public String getApplicationName() {
 		return applicationName;
 	}
@@ -401,6 +406,14 @@ public class OpConCliArguments {
 
 	public void setJobLogFileName(String jobLogFileName) {
 		this.jobLogFileName = jobLogFileName;
+	}
+
+	public boolean isRetrieveLogFiles() {
+		return retrieveLogFiles;
+	}
+
+	public void setRetrieveLogFiles(boolean retrieveLogFiles) {
+		this.retrieveLogFiles = retrieveLogFiles;
 	}
 
 }

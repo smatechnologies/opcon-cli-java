@@ -49,7 +49,7 @@
     <if condition='property("logback.logfile").contains("TRUE")'>
         <then>
 		    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		        <file>${logback.path}/${logback.logfile.name}.log</file>
+                <prudent>true</prudent>
 		        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 		            <fileNamePattern>${logback.path}/%d{yyyy-MM, aux}/${logback.logfile.name}_%d{yyyy-MM-dd}.%i.log</fileNamePattern>
 		            <maxFileSize>${logback.maxsize.file}</maxFileSize>

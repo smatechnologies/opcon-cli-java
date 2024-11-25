@@ -56,7 +56,7 @@ public class OpConCliImpl implements IOpConCli {
 	private static final String ApplicationTokenProcessingMsg =           "Processing task ({0}) arguments : appname ({1})";
 	private static final String ApplicationTokenMissingNameMsg =	      "Required -ap (application name) argument missing for AppToken task";
 
-	private static final String DependencyProcessingTaskMsg =             "Processing task ({0}) arguments : date ({1}) schedule ({2}) job ({3})";
+	private static final String DependencyProcessingTaskMsg =             "Processing task ({0}) arguments : date ({1}) schedule ({2}) job ({3} retrieve log files ({4}))";
 	private static final String DependencyMissingScheduleNameMsg =        "Required -sn (schedule name) argument missing for JobAdd task";
 	private static final String DependencyMissingJobNameMsg =             "Required -jn (job name) argument missing for JobAdd task";
 
@@ -204,7 +204,8 @@ public class OpConCliImpl implements IOpConCli {
 							_OpConCliArguments.getTaskDate(),
 							_OpConCliArguments.getScheduleName(),
 							_OpConCliArguments.getJobName(),
-							_OpConCliArguments.getOpConSystem()
+							_OpConCliArguments.getOpConSystem(),
+							_OpConCliArguments.isRetrieveLogFiles()
 							));
 					completionCode = _IDependency.remoteDependency(opconApi, _OpConCliArguments);
 					break;
@@ -557,7 +558,7 @@ public class OpConCliImpl implements IOpConCli {
 		        
 		        client = clientBuilder.build();
 				DefaultObjectMapperProvider objectMapperProvider = new DefaultObjectMapperProvider();
-			    objectMapperProvider.getObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+			    objectMapperProvider.getObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	            client.register(new WsLogger(objectMapperProvider));
 		        
 	            ctxObjectMapperProvider = objectMapperProvider;
@@ -567,7 +568,7 @@ public class OpConCliImpl implements IOpConCli {
 		        
 		        client = clientBuilder.build();
 		        DefaultObjectMapperProvider objectMapperProvider = new DefaultObjectMapperProvider();
-			    objectMapperProvider.getObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+			    objectMapperProvider.getObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	            ctxObjectMapperProvider = objectMapperProvider;
 			}
             opconApi = new OpconApi(client, profile, new OpconApi.OpconApiListener() {

@@ -88,15 +88,17 @@ public class DependencyImpl implements IDependency {
 					}
 					success = Integer.parseInt(tcode);
 				}
-				if((!(jobMonitorData.getType() == -1)) &&
-						(!(jobMonitorData.getType() == 15))) {
-					List<JobLogData> jobLogDataList = _IJob.getJobLogByDailyJob(opconApi, jobMonitorData.getDailyJob());
-					LOG.info(SeperatorLineMsg);
-					LOG.info(JobLogHeaderMsg);
-					LOG.info(SeperatorLineMsg);
-					for(JobLogData jobLogData : jobLogDataList) {
-						for(String record : jobLogData.getRecords()) {
-							LOG.info(MessageFormat.format(JobLogLineMsg, record));
+				if(_OpConCliArguments.isRetrieveLogFiles()) {
+					if((!(jobMonitorData.getType() == -1)) &&
+							(!(jobMonitorData.getType() == 15))) {
+						List<JobLogData> jobLogDataList = _IJob.getJobLogByDailyJob(opconApi, jobMonitorData.getDailyJob());
+						LOG.info(SeperatorLineMsg);
+						LOG.info(JobLogHeaderMsg);
+						LOG.info(SeperatorLineMsg);
+						for(JobLogData jobLogData : jobLogDataList) {
+							for(String record : jobLogData.getRecords()) {
+								LOG.info(MessageFormat.format(JobLogLineMsg, record));
+							}
 						}
 					}
 				}
