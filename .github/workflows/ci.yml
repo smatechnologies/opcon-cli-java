@@ -60,7 +60,7 @@ jobs:
           args: zip -qq -r ./OpConCLI_Windows.zip ./OpConCLI_Windows
 
       # Upload the OpConCLI_Windows.zip file as artifact
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v4
         with:
           name: OpConCLI_Windows.zip
           path: ./OpConCLI_Windows.zip
@@ -94,7 +94,7 @@ jobs:
         run: tar -cvzf ./OpConCLI_Linux.tar.gz ./OpConCLI_Linux
 
       # Upload the OpConCLI_Linux.tar.gz file as artifact
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v4
         with:
           name: OpConCLI_Linux.tar.gz
           path: ./OpConCLI_Linux.tar.gz
@@ -111,13 +111,13 @@ jobs:
     
     steps:
       - name: Download Windows Package
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: OpConCLI_Windows.zip
           path: ./
 
       - name: Download Linux Package
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: OpConCLI_Linux.tar.gz
           path: ./
